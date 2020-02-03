@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "dev": "rollup -c --watch"
+  },
+  "name": "web-app-from-scratch-1920",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:aaraar/web-app-from-scratch-1920.git",
+  "author": "Bas de Greeuw <bas.de.greeuw@van-ons.nl>",
+  "license": "MIT",
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "rollup": "^1.31.0"
+  }
+}

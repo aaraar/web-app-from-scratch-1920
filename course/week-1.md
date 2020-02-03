@@ -48,10 +48,13 @@ Publish your web app with Github pages and add the link to the web app in the re
 
 A good app comes with a good README.md in which you describe the application. Add the chapters below and document your app.
 
-* linkToLiveDemo? review (assignment): assignGrade (1);  
+* linkToLiveDemo? review (assignment): assignGrade (1);
+[Live Demo](https://aaraar.github.io/web-app-from-scratch-1920/)  
 * What does your app do, what is the goal? (passing butter)  
+Display train information from NS API
 * Which actors are there in your application? (actor diagram)  
 * Which API is used and what are the limitations? (rate limit)  
+NS api's
 * How does flowed interaction through the application? (interaction diagram)  
 * Which design patterns and best practices  
 * What would you like to add (feature wishlist / backlog)  
