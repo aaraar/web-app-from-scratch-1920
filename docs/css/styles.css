@@ -1,21 +1,12 @@
-.stations--list {
-  display: flex;
-  justify-content: space-between;
-  list-style-type: none;
-  flex-wrap: wrap;
-  padding: 0; }
-
-.stations--item {
-  min-width: 500px; }
-
-:root {
-  --dark: #000;
-  --course: #f7d417;
-  --light: #fff; }
-
+/*********************
+VARIABLES
+*********************/
+/*********************
+BREAKPOINTS
+*********************/
 body {
-  background-color: var(--dark);
-  color: var(--light);
+  background-color: #000;
+  color: #fff;
   font-family: sans-serif;
   margin: 0; }
 
@@ -25,19 +16,18 @@ main {
   margin: 0 auto; }
 
 header {
-  background: var(--course);
-  color: var(--dark);
+  background: #f7d417;
+  color: #000;
   height: 30vh;
   display: flex;
   justify-content: center;
   align-items: center; }
 
 h2 {
-  font-size: 2em;
-  margin-top: 1.5em; }
+  font-size: 2em; }
 
 ul img {
-  border: 2px solid var(--light);
+  border: 2px solid #fff;
   margin-top: 2em;
   margin-bottom: 2em; }
 
@@ -45,8 +35,8 @@ img {
   max-width: 100%; }
 
 .button {
-  background: var(--light);
-  color: var(--dark);
+  background: #fff;
+  color: #000;
   padding: 1em; }
 
 .examples img {
@@ -54,7 +44,27 @@ img {
 
 a,
 a:visited {
-  color: var(--course); }
+  color: #f7d417; }
 
 footer {
   font-style: italic; }
+
+.stations--list {
+  display: grid;
+  grid-template-columns: 1fr;
+  list-style-type: none;
+  padding: 0; }
+  @media (min-width: 800px) {
+    .stations--list {
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 0.5em;
+      grid-row-gap: 0.5em; } }
+
+.stations--item {
+  padding: 0.5em;
+  background-color: #1a1a1a;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform ease-out 0.2s; }
+  .stations--item:hover {
+    transform: translateY(-2px); }

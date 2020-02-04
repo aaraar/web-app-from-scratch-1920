@@ -1,13 +1,23 @@
 .stations {
   &--list {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr;
     list-style-type: none;
-    flex-wrap: wrap;
     padding: 0;
+    @include breakpoint(medium){
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 0.5em;
+      grid-row-gap: 0.5em;
+    }
   }
-
-  &--item {
-    min-width: 500px;
+  &--item{
+    padding: 0.5em;
+    background-color: lighten($dark, 10%);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform ease-out 0.2s;
+    &:hover {
+      transform: translateY(-2px);
+    }
   }
 }
