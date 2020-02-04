@@ -6,11 +6,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:aaraar/web-app-from-scratch-1920.git",
-  "author": "Bas de Greeuw <bas.de.greeuw@van-ons.nl>",
+  "author": "Bas de Greeuw <bas.de.greeuw@activecollective.nl>",
   "license": "MIT",
   "dependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
-    "rollup": "^1.31.0"
+    "rollup": "^1.31.0",
+    "rollup-plugin-scss": "^2.1.0"
   }
 }

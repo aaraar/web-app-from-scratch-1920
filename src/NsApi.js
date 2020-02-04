@@ -1,14 +1,4 @@
-export const asyncApiCall = async ( url, requestObject ) => {
-    const res = fetch ( url, requestObject )
-    return ( await res ).json()
-}
-
-const htmlToElement = ( markup ) => {
-    var templateEl = document.createElement ( 'template' );
-    markup = markup.trim (); // Never return a text node of whitespace as the result
-    templateEl.innerHTML = markup;
-    return templateEl.content.firstChild;
-}
+import { htmlToElement } from './helpers'
 
 
 export const renderStations = ( listEl, stations ) => {

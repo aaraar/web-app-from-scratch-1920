@@ -1,0 +1,13 @@
+.stations {
+  &--list {
+    display: flex;
+    justify-content: space-between;
+    list-style-type: none;
+    flex-wrap: wrap;
+    padding: 0;
+  }
+
+  &--item {
+    min-width: 500px;
+  }
+}

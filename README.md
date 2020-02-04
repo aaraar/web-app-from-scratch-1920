@@ -4,7 +4,12 @@
 Display train and trip information from NS
 ## Actors in app
 ## API & limitations
-NS station api
+*NS api's*    
+Hoewel NS er naar streeft de NS API doorlopend beschikbaar te houden, kan NS dat niet garanderen. 
+Ter voorkoming van congestie of overbelasting van het systeem hanteert NS een gebruikslimiet van
+1.000 requests per 5 minuten voor de travel information api
+en 180 requests per 5 minuten voor de price information api.
+Bij overmatig gebruik van de NS API kan NS de toegang tot de NS API beperken of blokkeren.
 ## Interaction
 ## Design patterns and best practices  
 ## Deature wishlist / backlog

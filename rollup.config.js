@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
+import scss from 'rollup-plugin-scss'
 
 export default {
     input: 'src/app.js',
@@ -14,5 +15,8 @@ export default {
             browser: true
         }),
         commonjs(),
+        scss({
+            output: 'docs/css/styles.css'}
+        ) // will output compiled styles to bundle.css
     ]
 }

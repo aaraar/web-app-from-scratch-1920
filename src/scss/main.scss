@@ -1,28 +1,23 @@
-.stations--list {
-  display: flex;
-  justify-content: space-between;
-  list-style-type: none;
-  flex-wrap: wrap;
-  padding: 0; }
-
-.stations--item {
-  min-width: 500px; }
+@import "stations";
 
 :root {
   --dark: #000;
   --course: #f7d417;
-  --light: #fff; }
+  --light: #fff;
+}
 
 body {
   background-color: var(--dark);
   color: var(--light);
   font-family: sans-serif;
-  margin: 0; }
+  margin: 0;
+}
 
 main {
   max-width: 1000px;
   padding: 0 2rem;
-  margin: 0 auto; }
+  margin: 0 auto;
+}
 
 header {
   background: var(--course);
@@ -30,31 +25,39 @@ header {
   height: 30vh;
   display: flex;
   justify-content: center;
-  align-items: center; }
+  align-items: center;
+}
 
 h2 {
   font-size: 2em;
-  margin-top: 1.5em; }
+  margin-top: 1.5em;
+}
 
 ul img {
   border: 2px solid var(--light);
   margin-top: 2em;
-  margin-bottom: 2em; }
+  margin-bottom: 2em;
+}
 
 img {
-  max-width: 100%; }
+  max-width: 100%;
+}
 
 .button {
   background: var(--light);
   color: var(--dark);
-  padding: 1em; }
+  padding: 1em;
+}
 
 .examples img {
-  max-width: 25vh; }
+  max-width: 25vh;
+}
 
 a,
 a:visited {
-  color: var(--course); }
+  color: var(--course);
+}
 
 footer {
-  font-style: italic; }
+  font-style: italic;
+}
