@@ -59,6 +59,7 @@ export class Home {
         this.stationsSearchField.addEventListener('keyup', async () => {
             // @ts-ignore
             const searchQuery = this.stationsSearchField.value
+            // @ts-ignore
             const filteredStations = await this.nsStations.filter(station => station.namen.lang.toLowerCase().includes(searchQuery.toLowerCase()))
             this.Stations.renderStations(this.stationListEl, filteredStations)
         })

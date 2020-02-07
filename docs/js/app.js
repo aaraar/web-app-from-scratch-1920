@@ -68,7 +68,6 @@
         };
         return Page;
     }());
-    //# sourceMappingURL=Page.js.map
 
     var asyncApiCall = function (endpoint, requestObject, queries) {
         if (queries === void 0) { queries = [['']]; }
@@ -91,7 +90,6 @@
             });
         });
     };
-    //# sourceMappingURL=helpers.js.map
 
     var Station = /** @class */ (function () {
         function Station(stationCode, stationName) {
@@ -104,6 +102,7 @@
                     'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
                 }
             }, [['station', this.stationCode]]).then(function (res) {
+                // @ts-ignore
                 _this.arrivals = res.payload.arrivals;
                 console.log(_this.stationName);
                 _this.markup = "<section class=\"station--wrapper\">\n            <h2>" + _this.stationName + "</h2>\n        </section>\n            ";
@@ -166,7 +165,6 @@
         }
         return Stations;
     }());
-    //# sourceMappingURL=Stations.js.map
 
     var Home = /** @class */ (function () {
         function Home() {
@@ -220,10 +218,8 @@
         };
         return Home;
     }());
-    //# sourceMappingURL=Home.js.map
 
     var home = new Home;
     home.render();
-    //# sourceMappingURL=app.js.map
 
 }());

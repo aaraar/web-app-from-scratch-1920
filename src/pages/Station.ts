@@ -15,6 +15,7 @@ export class Station {
                 'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
             }
         }, [['station', this.stationCode]]).then(res => {
+            // @ts-ignore
             this.arrivals = res.payload.arrivals
             console.log(this.stationName)
             this.markup = `<section class="station--wrapper">
