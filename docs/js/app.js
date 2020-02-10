@@ -115,6 +115,7 @@
         };
         return Home;
     }());
+    //# sourceMappingURL=Home.js.map
 
     var asyncApiCall = function (endpoint, requestObject, queries) {
         if (queries === void 0) { queries = [['']]; }
@@ -132,20 +133,20 @@
     //# sourceMappingURL=helpers.js.map
 
     var Station = /** @class */ (function () {
-        function Station(stationCode, stationName) {
+        function Station(code, name) {
             var _this = this;
-            this.stationCode = stationCode;
-            this.stationName = stationName;
+            this.code = code;
+            this.name = name;
             asyncApiCall('arrivals', {
                 method: 'GET',
                 headers: {
                     'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
                 }
-            }, [['station', this.stationCode]]).then(function (res) {
+            }, [['station', this.code]]).then(function (res) {
                 // @ts-ignore
                 _this.arrivals = res.payload.arrivals;
-                console.log(_this.stationName);
-                _this.markup = "<section class=\"station--wrapper\">\n            <h2>" + _this.stationName + "</h2>\n        </section>\n            ";
+                console.log(_this.name);
+                _this.markup = "<section class=\"station--wrapper\">\n            <h2>" + _this.name + "</h2>\n        </section>\n            ";
                 new Page(_this.markup).render();
             }).catch(function (err) {
                 console.error(err);
@@ -153,7 +154,6 @@
         }
         return Station;
     }());
-    //# sourceMappingURL=Station.js.map
 
     var Stations = /** @class */ (function () {
         function Stations() {

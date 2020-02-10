@@ -16,7 +16,7 @@ export default {
             main: true,
             browser: true
         } ),
-        typescript ( { lib: [ "es5", "es6", "dom" ], target: "es5" } ),
+        typescript ( { lib: [ "es5", "es6", "dom" ], target: "es6" } ),
         commonjs (),
         scss ( {
                 output: 'docs/css/styles.css'
