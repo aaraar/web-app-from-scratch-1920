@@ -68,28 +68,68 @@
         };
         return Page;
     }());
+    //# sourceMappingURL=Page.js.map
+
+    var Home = /** @class */ (function () {
+        function Home(Stations) {
+            this.Stations = Stations;
+            this.Stations = Stations;
+            this.markup =
+                "<section class=\"stations--wrapper\">\n            <h2>NS stations in Nederland</h2>\n            <form action=\"\">\n                <input type=\"text\" class=\"stations--search-field\" placeholder=\"Search for a station\">\n                <button>search</button>\n            </form>\n            <img class=\"stations--loading\" src=\"img/loading.svg\" alt=\"Loading icon\">\n            <ul class=\"stations--list\">\n            </ul>\n        </section>";
+        }
+        Home.prototype.render = function () {
+            new Page(this.markup).render();
+            this.stationListEl = document.querySelector('.stations--list');
+            this.stationsSearchField = document.querySelector('.stations--search-field');
+            this.stationsWrapper = document.querySelector('.stations--wrapper');
+            this.loadingAnimation = document.querySelector('.stations--loading');
+            this.renderStations();
+        };
+        Home.prototype.renderStations = function () {
+            var _this = this;
+            this.Stations.getAll().then(function (stations) {
+                _this.stationsWrapper.removeChild(_this.loadingAnimation);
+                _this.Stations.render(_this.stationListEl, stations.payload);
+                _this.Stations.giveStationsDetails(_this.stationListEl);
+                _this.addFilter();
+            });
+        };
+        Home.prototype.addFilter = function () {
+            var _this = this;
+            this.Stations.getAll().then(function (stations) {
+                _this.stationsSearchField.addEventListener('keyup', function () { return __awaiter(_this, void 0, void 0, function () {
+                    var searchQuery, filteredStations;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                searchQuery = this.stationsSearchField.value;
+                                return [4 /*yield*/, stations.payload.filter(function (station) { return station.namen.lang.toLowerCase().includes(searchQuery.toLowerCase()); })];
+                            case 1:
+                                filteredStations = _a.sent();
+                                this.Stations.render(this.stationListEl, filteredStations);
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+            });
+        };
+        return Home;
+    }());
 
     var asyncApiCall = function (endpoint, requestObject, queries) {
         if (queries === void 0) { queries = [['']]; }
-        return __awaiter(void 0, void 0, Promise, function () {
-            var queryArray, query, res;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        queryArray = queries.map(function (query) { return query.join('='); });
-                        query = queryArray.join('&');
-                        res = fetch("https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/" + endpoint + "?" + query, requestObject).then(function (res) {
-                            if (res.ok)
-                                return res;
-                            else
-                                return Promise.reject(res);
-                        });
-                        return [4 /*yield*/, res];
-                    case 1: return [2 /*return*/, (_a.sent()).json()];
-                }
+        var queryArray = queries.map(function (query) { return query.join('='); });
+        var query = queryArray.join('&');
+        return new Promise(function (resolve, reject) {
+            fetch("https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/" + endpoint + "?" + query, requestObject).then(function (res) {
+                if (res.ok)
+                    resolve(res.json());
+                else
+                    reject(res);
             });
         });
     };
+    //# sourceMappingURL=helpers.js.map
 
     var Station = /** @class */ (function () {
         function Station(stationCode, stationName) {
@@ -113,49 +153,10 @@
         }
         return Station;
     }());
+    //# sourceMappingURL=Station.js.map
 
     var Stations = /** @class */ (function () {
         function Stations() {
-            this.renderStations = function (listEl, stations) {
-                while (listEl.firstChild)
-                    listEl.removeChild(listEl.firstChild); // empties the ul
-                stations.forEach(function (station) {
-                    var listItem = document.createElement('li');
-                    var heading = document.createElement('h3');
-                    var country = document.createElement('p');
-                    var countryName;
-                    listItem.classList.add('stations--item');
-                    listItem.setAttribute('data-station-code', station.code);
-                    listItem.setAttribute('data-station-name', station.namen.lang);
-                    heading.innerText = station.namen.lang;
-                    switch (station.land) {
-                        case "NL":
-                            countryName = 'Nederland';
-                            break;
-                        case "D":
-                            countryName = 'Duitsland';
-                            break;
-                        case "B":
-                            countryName = "België";
-                            break;
-                        case "F":
-                            countryName = "Frankrijk";
-                            break;
-                        case "GB":
-                            countryName = "Groot-Britannië";
-                            break;
-                        case "A":
-                            countryName = "Oostenrijk";
-                            break;
-                        case "CH":
-                            countryName = "Zwitserland";
-                            break;
-                    }
-                    country.innerText = "" + countryName;
-                    listItem.append(heading, country);
-                    listEl.appendChild(listItem);
-                });
-            };
             this.giveStationsDetails = function (listEl) {
                 listEl.addEventListener('click', function (event) {
                     var clickedStation = event.target.closest('li');
@@ -163,63 +164,88 @@
                 });
             };
         }
-        return Stations;
-    }());
-
-    var Home = /** @class */ (function () {
-        function Home() {
-            this.Stations = new Stations;
-            this.Stations = new Stations;
-            this.markup =
-                "<section class=\"stations--wrapper\">\n            <h2>NS stations in Nederland</h2>\n            <form action=\"\">\n                <input type=\"text\" class=\"stations--search-field\" placeholder=\"Search for a station\">\n                <button>search</button>\n            </form>\n            <img class=\"stations--loading\" src=\"img/loading.svg\" alt=\"Loading icon\">\n            <ul class=\"stations--list\">\n            </ul>\n        </section>";
-        }
-        Home.prototype.render = function () {
-            new Page(this.markup).render();
-            this.stationListEl = document.querySelector('.stations--list');
-            this.stationsSearchField = document.querySelector('.stations--search-field');
-            this.stationsWrapper = document.querySelector('.stations--wrapper');
-            this.loadingAnimation = document.querySelector('.stations--loading');
-            this.getNsData();
-        };
-        Home.prototype.getNsData = function () {
-            var _this = this;
-            asyncApiCall('stations', {
-                method: 'GET',
-                headers: {
-                    'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                }
-            }).then(function (res) {
-                // @ts-ignore
-                _this.nsStations = res.payload;
-                _this.Stations.renderStations(_this.stationListEl, _this.nsStations);
-                _this.stationsWrapper.removeChild(_this.loadingAnimation);
-                _this.Stations.giveStationsDetails(_this.stationListEl);
-                _this.handleSearch();
-            }).catch(function (err) {
-                console.error(err);
-            });
-        };
-        Home.prototype.handleSearch = function () {
-            var _this = this;
-            this.stationsSearchField.addEventListener('keyup', function () { return __awaiter(_this, void 0, void 0, function () {
-                var searchQuery, filteredStations;
+        Stations.prototype.getAll = function () {
+            return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0:
-                            searchQuery = this.stationsSearchField.value;
-                            return [4 /*yield*/, this.nsStations.filter(function (station) { return station.namen.lang.toLowerCase().includes(searchQuery.toLowerCase()); })];
-                        case 1:
-                            filteredStations = _a.sent();
-                            this.Stations.renderStations(this.stationListEl, filteredStations);
-                            return [2 /*return*/];
+                        case 0: return [4 /*yield*/, this.getDataFromApi()];
+                        case 1: return [2 /*return*/, _a.sent()];
                     }
                 });
-            }); });
+            });
         };
-        return Home;
+        Stations.prototype.getDataFromApi = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    if (localStorage.getItem('stations')) {
+                        return [2 /*return*/, JSON.parse(localStorage.getItem('stations'))];
+                    }
+                    else {
+                        return [2 /*return*/, new Promise(function (resolve, reject) {
+                                asyncApiCall('stations', {
+                                    method: 'GET',
+                                    headers: {
+                                        'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                                    }
+                                }).then(function (res) {
+                                    localStorage.setItem('stations', JSON.stringify(res));
+                                    resolve(res);
+                                });
+                            })];
+                    }
+                });
+            });
+        };
+        Stations.prototype.render = function (listEl, stations) {
+            while (listEl.firstChild)
+                listEl.removeChild(listEl.firstChild); // empties the ul
+            stations.forEach(function (station) {
+                var listItem = document.createElement('li');
+                var heading = document.createElement('h3');
+                var country = document.createElement('p');
+                var countryName;
+                listItem.classList.add('stations--item');
+                listItem.setAttribute('data-station-code', station.code);
+                listItem.setAttribute('data-station-name', station.namen.lang);
+                heading.innerText = station.namen.lang;
+                switch (station.land) {
+                    case "NL":
+                        countryName = 'Nederland';
+                        break;
+                    case "D":
+                        countryName = 'Duitsland';
+                        break;
+                    case "B":
+                        countryName = "België";
+                        break;
+                    case "F":
+                        countryName = "Frankrijk";
+                        break;
+                    case "GB":
+                        countryName = "Groot-Britannië";
+                        break;
+                    case "A":
+                        countryName = "Oostenrijk";
+                        break;
+                    case "CH":
+                        countryName = "Zwitserland";
+                        break;
+                }
+                country.innerText = "" + countryName;
+                listItem.append(heading, country);
+                listEl.appendChild(listItem);
+            });
+        };
+        return Stations;
     }());
+    //# sourceMappingURL=Stations.js.map
 
-    var home = new Home;
+    var stations = new Stations();
+    var home = new Home(stations);
     home.render();
+    // const home = new Home
+    //
+    // home.render()
+    //# sourceMappingURL=app.js.map
 
 }());

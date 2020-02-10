@@ -7,14 +7,16 @@ interface RequestObject {
     body?
 }
 
-export const asyncApiCall = async (endpoint: string,
-                                   requestObject: RequestObject,
-                                   queries: [string[]] = [['']]): Promise<object> => {
+export const asyncApiCall = (
+    endpoint: string,
+    requestObject: RequestObject,
+    queries: [string[]] = [['']]): Promise<object> => {
     const queryArray: string[] = queries.map(query => query.join('='))
     const query: string = queryArray.join('&')
-    const res = fetch(`https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/${endpoint}?${query}`, requestObject).then(res => {
-        if (res.ok) return res
-        else return Promise.reject(res)
+    return new Promise((resolve, reject) => {
+        fetch(`https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/${endpoint}?${query}`, requestObject).then(res => {
+            if (res.ok) resolve(res.json())
+            else reject(res)
+        })
     })
-    return (await res).json()
 }

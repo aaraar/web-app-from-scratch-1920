@@ -3,6 +3,18 @@
 ## App goal
 Display train and trip information from NS
 ## Actors in app
+1. Identify the purpose of the app
+    - A simple way to check the availablity of seats in an NS-train wagon 
+2. Identify the functionalities needed to realize the purpose
+    - Users can look for the station they will visit or ar at right now
+    - Users can find or plan their trip
+    - Users can see the load of each wagon identified by color
+    - Users can see alternative trips or trains that reach the same destinations
+3. Determine which actors will handle these functionalities
+    - Users can enter a search term: App->Stations->filter
+    - Users can select a station (departure): App->Stations->Station(->Details)
+    - Users select a destination (arrival): App->Stations->Station(->Details)
+    - Users can view trip information: App->Trip
 ## API & limitations
 *NS api's*    
 Hoewel NS er naar streeft de NS API doorlopend beschikbaar te houden, kan NS dat niet garanderen. 

@@ -1,6 +1,5 @@
 import {Page} from '../Page'
-import {asyncApiCall} from "../helpers";
-import {Stations} from "../Stations";
+import {Stations} from '../Stations'
 
 export class Home {
     markup: string
@@ -8,11 +7,10 @@ export class Home {
     stationsSearchField: HTMLElement
     stationsWrapper: HTMLElement
     loadingAnimation: HTMLElement
-    nsStations: object[]
-    Stations = new Stations
+    Stations = Stations
 
-    constructor() {
-        this.Stations = new Stations
+    constructor(Stations) {
+        this.Stations = Stations
         this.markup =
             `<section class="stations--wrapper">
             <h2>NS stations in Nederland</h2>
@@ -32,36 +30,26 @@ export class Home {
         this.stationsSearchField = document.querySelector('.stations--search-field')
         this.stationsWrapper = document.querySelector('.stations--wrapper')
         this.loadingAnimation = document.querySelector('.stations--loading')
-        this.getNsData()
+        this.renderStations()
     }
-
-    getNsData() {
-        asyncApiCall(
-            'stations',
-            {
-                method: 'GET',
-                headers: {
-                    'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                }
-            }).then(res => {
-            // @ts-ignore
-            this.nsStations = res.payload
-            this.Stations.renderStations(this.stationListEl, this.nsStations)
+    renderStations() {
+        this.Stations.getAll().then( stations => {
             this.stationsWrapper.removeChild(this.loadingAnimation)
+            this.Stations.render(this.stationListEl, stations.payload)
             this.Stations.giveStationsDetails(this.stationListEl)
-            this.handleSearch()
-        }).catch(err => {
-            console.error(err)
+            this.addFilter()
         })
     }
 
-    handleSearch() {
-        this.stationsSearchField.addEventListener('keyup', async () => {
-            // @ts-ignore
-            const searchQuery = this.stationsSearchField.value
-            // @ts-ignore
-            const filteredStations = await this.nsStations.filter(station => station.namen.lang.toLowerCase().includes(searchQuery.toLowerCase()))
-            this.Stations.renderStations(this.stationListEl, filteredStations)
+    addFilter() {
+        this.Stations.getAll().then( stations => {
+            this.stationsSearchField.addEventListener('keyup', async () => {
+                // @ts-ignore
+                const searchQuery = this.stationsSearchField.value
+                // @ts-ignore
+                const filteredStations = await stations.payload.filter(station => station.namen.lang.toLowerCase().includes(searchQuery.toLowerCase()))
+                this.Stations.render(this.stationListEl, filteredStations)
+            })
         })
     }
 }

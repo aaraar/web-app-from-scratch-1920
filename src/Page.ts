@@ -1,12 +1,11 @@
-
 export class Page {
     title: {
         content: string
         tag: string
-    }
-    dynamicElements: string[]
-    markup: string
-    app: HTMLElement
+    };
+    dynamicElements: string[];
+    markup: string;
+    app: HTMLElement;
     constructor(markup) {
         this.app = document.getElementById('app')
         this.markup = markup.trim()

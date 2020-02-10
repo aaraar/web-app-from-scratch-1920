@@ -2,8 +2,30 @@ import {asyncApiCall} from "./helpers";
 import {Station} from "./pages/Station";
 
 export class Stations {
-    station
-    renderStations = (listEl, stations) => {
+    async getAll() {
+        return await this.getDataFromApi()
+    }
+    async getDataFromApi() {
+        if (localStorage.getItem('stations')) {
+            return JSON.parse(localStorage.getItem('stations'))
+        }
+        else {
+            return new Promise((resolve, reject) => {
+                asyncApiCall(
+                    'stations',
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                        }
+                    }).then( res => {
+                    localStorage.setItem('stations', JSON.stringify(res))
+                    resolve(res)
+                })
+            })
+        }
+    }
+    render (listEl, stations) {
         while (listEl.firstChild) listEl.removeChild(listEl.firstChild); // empties the ul
         stations.forEach(station => {
             const listItem = document.createElement('li')
