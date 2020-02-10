@@ -7,7 +7,7 @@ export class Home {
     stationsSearchField: HTMLElement
     stationsWrapper: HTMLElement
     loadingAnimation: HTMLElement
-    Stations = Stations
+    Stations: Stations
 
     constructor(Stations) {
         this.Stations = Stations
@@ -36,20 +36,16 @@ export class Home {
         this.Stations.getAll().then( stations => {
             this.stationsWrapper.removeChild(this.loadingAnimation)
             this.Stations.render(this.stationListEl, stations.payload)
-            this.Stations.giveStationsDetails(this.stationListEl)
             this.addFilter()
         })
     }
 
     addFilter() {
-        this.Stations.getAll().then( stations => {
-            this.stationsSearchField.addEventListener('keyup', async () => {
-                // @ts-ignore
-                const searchQuery = this.stationsSearchField.value
-                // @ts-ignore
-                const filteredStations = await stations.payload.filter(station => station.namen.lang.toLowerCase().includes(searchQuery.toLowerCase()))
-                this.Stations.render(this.stationListEl, filteredStations)
-            })
+        this.stationsSearchField.addEventListener('keyup', async () => {
+            // @ts-ignore
+            const query = this.stationsSearchField.value
+            const filteredData = await this.Stations.filterByNames(query)
+            this.Stations.render(this.stationListEl, filteredData)
         })
     }
 }

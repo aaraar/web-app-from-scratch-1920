@@ -31,6 +31,31 @@ Bij overmatig gebruik van de NS API kan NS de toegang tot de NS API beperken of 
     - Display passing stations in trip
     - Display train occupation per 
 
+### NS stations responce example
+```json
+{
+"EVACode": "7004428",
+"UICCode": "7015400",
+code: "STP",
+heeftFaciliteiten: true,
+heeftReisassistentie: false,
+heeftVertrektijden: true,
+land: "GB",
+lat: 51.531437,
+lng: -0.126136,
+naderenRadius: 1,
+namen: {
+kort: "London StP",
+lang: "London St. Pancras Int.",
+middel: "London St. P Int"
+},​​​​
+radius: 1,
+sporen: [],​​​​​
+stationType: "MEGA_STATION",
+synoniemen: []
+}
+```
+
 
 <!-- ☝️ replace this description with a description of your own work -->
 

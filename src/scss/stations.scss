@@ -1,14 +1,12 @@
 .stations {
   &--list {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     list-style-type: none;
     padding: 0;
-    @include breakpoint(medium){
-      grid-template-columns: 1fr 1fr;
-      grid-column-gap: 0.5em;
-      grid-row-gap: 0.5em;
-    }
+    grid-column-gap: 0.5em;
+    grid-row-gap: 0.5em;
+
   }
   &--item{
     padding: 0.5em;

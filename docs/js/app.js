@@ -25,104 +25,68 @@
         });
     }
 
-    function __generator(thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    }
-
-    var Page = /** @class */ (function () {
-        function Page(markup) {
+    class Page {
+        constructor(markup) {
             this.app = document.getElementById('app');
             this.markup = markup.trim();
         }
-        Page.prototype.destroy = function () {
+        destroy() {
             while (this.app.firstChild)
                 this.app.removeChild(this.app.firstChild);
-        };
-        Page.prototype.render = function () {
+        }
+        render() {
             this.destroy();
             this.app.insertAdjacentHTML('afterbegin', this.markup);
-        };
-        return Page;
-    }());
+        }
+    }
     //# sourceMappingURL=Page.js.map
 
-    var Home = /** @class */ (function () {
-        function Home(Stations) {
-            this.Stations = Stations;
+    class Home {
+        constructor(Stations) {
             this.Stations = Stations;
             this.markup =
-                "<section class=\"stations--wrapper\">\n            <h2>NS stations in Nederland</h2>\n            <form action=\"\">\n                <input type=\"text\" class=\"stations--search-field\" placeholder=\"Search for a station\">\n                <button>search</button>\n            </form>\n            <img class=\"stations--loading\" src=\"img/loading.svg\" alt=\"Loading icon\">\n            <ul class=\"stations--list\">\n            </ul>\n        </section>";
+                `<section class="stations--wrapper">
+            <h2>NS stations in Nederland</h2>
+            <form action="">
+                <input type="text" class="stations--search-field" placeholder="Search for a station">
+                <button>search</button>
+            </form>
+            <img class="stations--loading" src="img/loading.svg" alt="Loading icon">
+            <ul class="stations--list">
+            </ul>
+        </section>`;
         }
-        Home.prototype.render = function () {
+        render() {
             new Page(this.markup).render();
             this.stationListEl = document.querySelector('.stations--list');
             this.stationsSearchField = document.querySelector('.stations--search-field');
             this.stationsWrapper = document.querySelector('.stations--wrapper');
             this.loadingAnimation = document.querySelector('.stations--loading');
             this.renderStations();
-        };
-        Home.prototype.renderStations = function () {
-            var _this = this;
-            this.Stations.getAll().then(function (stations) {
-                _this.stationsWrapper.removeChild(_this.loadingAnimation);
-                _this.Stations.render(_this.stationListEl, stations.payload);
-                _this.Stations.giveStationsDetails(_this.stationListEl);
-                _this.addFilter();
+        }
+        renderStations() {
+            this.Stations.getAll().then(stations => {
+                this.stationsWrapper.removeChild(this.loadingAnimation);
+                this.Stations.render(this.stationListEl, stations.payload);
+                this.addFilter();
             });
-        };
-        Home.prototype.addFilter = function () {
-            var _this = this;
-            this.Stations.getAll().then(function (stations) {
-                _this.stationsSearchField.addEventListener('keyup', function () { return __awaiter(_this, void 0, void 0, function () {
-                    var searchQuery, filteredStations;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                searchQuery = this.stationsSearchField.value;
-                                return [4 /*yield*/, stations.payload.filter(function (station) { return station.namen.lang.toLowerCase().includes(searchQuery.toLowerCase()); })];
-                            case 1:
-                                filteredStations = _a.sent();
-                                this.Stations.render(this.stationListEl, filteredStations);
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-            });
-        };
-        return Home;
-    }());
+        }
+        addFilter() {
+            this.stationsSearchField.addEventListener('keyup', () => __awaiter(this, void 0, void 0, function* () {
+                // @ts-ignore
+                const query = this.stationsSearchField.value;
+                const filteredData = yield this.Stations.filterByNames(query);
+                this.Stations.render(this.stationListEl, filteredData);
+            }));
+        }
+    }
     //# sourceMappingURL=Home.js.map
 
-    var asyncApiCall = function (endpoint, requestObject, queries) {
-        if (queries === void 0) { queries = [['']]; }
-        var queryArray = queries.map(function (query) { return query.join('='); });
-        var query = queryArray.join('&');
-        return new Promise(function (resolve, reject) {
-            fetch("https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/" + endpoint + "?" + query, requestObject).then(function (res) {
+    const asyncApiCall = (endpoint, requestObject, queries = [['']]) => {
+        const queryArray = queries.map(query => query.join('='));
+        const query = queryArray.join('&');
+        return new Promise((resolve, reject) => {
+            fetch(`https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/${endpoint}?${query}`, requestObject).then(res => {
                 if (res.ok)
                     resolve(res.json());
                 else
@@ -132,117 +96,241 @@
     };
     //# sourceMappingURL=helpers.js.map
 
-    var Station = /** @class */ (function () {
-        function Station(code, name) {
-            var _this = this;
-            this.code = code;
-            this.name = name;
-            asyncApiCall('arrivals', {
-                method: 'GET',
-                headers: {
-                    'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+    class Stations {
+        getAll() {
+            return __awaiter(this, void 0, void 0, function* () {
+                return yield this.getDataFromApi();
+            });
+        }
+        getDataFromApi() {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (localStorage.getItem('stations')) {
+                    return JSON.parse(localStorage.getItem('stations'));
                 }
-            }, [['station', this.code]]).then(function (res) {
-                // @ts-ignore
-                _this.arrivals = res.payload.arrivals;
-                console.log(_this.name);
-                _this.markup = "<section class=\"station--wrapper\">\n            <h2>" + _this.name + "</h2>\n        </section>\n            ";
-                new Page(_this.markup).render();
-            }).catch(function (err) {
-                console.error(err);
+                else {
+                    return new Promise((resolve, reject) => {
+                        asyncApiCall('stations', {
+                            method: 'GET',
+                            headers: {
+                                'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                            }
+                        }).then(res => {
+                            console.log(res);
+                            localStorage.setItem('stations', JSON.stringify(res));
+                            resolve(res);
+                        });
+                    });
+                }
             });
         }
-        return Station;
-    }());
-
-    var Stations = /** @class */ (function () {
-        function Stations() {
-            this.giveStationsDetails = function (listEl) {
-                listEl.addEventListener('click', function (event) {
-                    var clickedStation = event.target.closest('li');
-                    var station = new Station(clickedStation.dataset.stationCode, clickedStation.dataset.stationName);
-                });
-            };
-        }
-        Stations.prototype.getAll = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, this.getDataFromApi()];
-                        case 1: return [2 /*return*/, _a.sent()];
-                    }
-                });
-            });
-        };
-        Stations.prototype.getDataFromApi = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    if (localStorage.getItem('stations')) {
-                        return [2 /*return*/, JSON.parse(localStorage.getItem('stations'))];
-                    }
-                    else {
-                        return [2 /*return*/, new Promise(function (resolve, reject) {
-                                asyncApiCall('stations', {
-                                    method: 'GET',
-                                    headers: {
-                                        'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                                    }
-                                }).then(function (res) {
-                                    localStorage.setItem('stations', JSON.stringify(res));
-                                    resolve(res);
-                                });
-                            })];
-                    }
-                });
-            });
-        };
-        Stations.prototype.render = function (listEl, stations) {
+        render(listEl, stations) {
+            // @ts-ignore
+            if (!listEl instanceof Element || !listEl instanceof HTMLDocument)
+                throw 'listEl is not an HTML element'; // https://stackoverflow.com/a/36894871
+            if (!stations[0])
+                throw 'stations is not an array';
             while (listEl.firstChild)
                 listEl.removeChild(listEl.firstChild); // empties the ul
-            stations.forEach(function (station) {
-                var listItem = document.createElement('li');
-                var heading = document.createElement('h3');
-                var country = document.createElement('p');
-                var countryName;
+            stations.forEach(station => {
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                const heading = document.createElement('h3');
+                const country = document.createElement('p');
+                let countryName;
                 listItem.classList.add('stations--item');
-                listItem.setAttribute('data-station-code', station.code);
+                link.setAttribute('href', `#stations/${station.code}`);
                 listItem.setAttribute('data-station-name', station.namen.lang);
                 heading.innerText = station.namen.lang;
                 switch (station.land) {
-                    case "NL":
+                    case 'NL':
                         countryName = 'Nederland';
                         break;
-                    case "D":
+                    case 'D':
                         countryName = 'Duitsland';
                         break;
-                    case "B":
-                        countryName = "België";
+                    case 'B':
+                        countryName = 'België';
                         break;
-                    case "F":
-                        countryName = "Frankrijk";
+                    case 'F':
+                        countryName = 'Frankrijk';
                         break;
-                    case "GB":
-                        countryName = "Groot-Britannië";
+                    case 'GB':
+                        countryName = 'Groot-Britannië';
                         break;
-                    case "A":
-                        countryName = "Oostenrijk";
+                    case 'A':
+                        countryName = 'Oostenrijk';
                         break;
-                    case "CH":
-                        countryName = "Zwitserland";
+                    case 'CH':
+                        countryName = 'Zwitserland';
                         break;
                 }
-                country.innerText = "" + countryName;
-                listItem.append(heading, country);
+                country.innerText = `${countryName}`;
+                link.append(heading, country);
+                listItem.append(link);
                 listEl.appendChild(listItem);
             });
-        };
-        return Stations;
-    }());
+        }
+        filterByNames(query) {
+            return new Promise((resolve, reject) => {
+                this.getAll().then(stations => {
+                    resolve(stations.payload.filter(station => station.namen.lang.toLowerCase().includes(query.toLowerCase())));
+                });
+            });
+        }
+        reduceByCode(code) {
+            return new Promise((resolve, reject) => {
+                this.getAll().then(stations => {
+                    resolve(stations.payload.reduce((acc, curr) => acc = curr.code === code ? curr : acc));
+                });
+            });
+        }
+    }
     //# sourceMappingURL=Stations.js.map
 
-    var stations = new Stations();
-    var home = new Home(stations);
-    home.render();
+    /*
+     * Created with https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d
+     * Edited for typescript to increase comprehension
+     * Check sourcecode at https://github.com/javascript-by-doing/create-a-modern-javascript-router
+     */
+    class Router {
+        constructor(...routes) {
+            this.clearSlashes = path => path.toString().replace(/\/$/, '').replace(/^\//, '');
+            this.checkRoute = () => {
+                if (this.currentUri === this.getEndpoint())
+                    return;
+                this.currentUri = this.getEndpoint();
+                this.routes.some(route => {
+                    const match = this.currentUri.match(route.path);
+                    if (match) {
+                        match.shift();
+                        route.callback.apply({}, match);
+                        return match;
+                    }
+                    return false;
+                });
+            };
+            this.routes = routes;
+            this.listen();
+        }
+        add(path, callback) {
+            this.routes.push({ path, callback });
+        }
+        remove(path) {
+            this.routes.forEach((route, index) => {
+                if (route.path === path) {
+                    this.routes.slice(index, 1);
+                    return this;
+                }
+                return this;
+            });
+        }
+        flush() {
+            this.routes = [];
+        }
+        getEndpoint(url = window.location.href) {
+            let endpoint = '';
+            const match = url.match(/#(.*)$/);
+            endpoint = match ? match[1] : '';
+            return this.clearSlashes(endpoint);
+        }
+        navigate(path = '') {
+            window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#${path}`;
+            return this;
+        }
+        listen() {
+            clearInterval(this.interval);
+            // @ts-ignore
+            this.interval = setInterval(this.checkRoute, 50);
+        }
+    }
+    //# sourceMappingURL=Router.js.map
+
+    class Station {
+        constructor(code, name) {
+            this.code = code;
+            this.name = name;
+        }
+        getArrivals() {
+            return __awaiter(this, void 0, void 0, function* () {
+                return yield this.initArrivalData();
+            });
+        }
+        getDepartures() {
+            return __awaiter(this, void 0, void 0, function* () {
+                return yield this.initDepartureData();
+            });
+        }
+        initArrivalData() {
+            return __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve, reject) => {
+                    asyncApiCall('arrivals', {
+                        method: 'GET',
+                        headers: {
+                            'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                        }
+                    }, [['station', this.code]]).then(res => {
+                        resolve(res);
+                    });
+                });
+            });
+        }
+        initDepartureData() {
+            return __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve, reject) => {
+                    asyncApiCall('departures', {
+                        method: 'GET',
+                        headers: {
+                            'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                        }
+                    }, [['station', this.code]]).then(res => {
+                        resolve(res);
+                    });
+                });
+            });
+        }
+        render() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const listEl = document.createElement('ul');
+                this.arrivals = yield this.getArrivals();
+                this.departures = yield this.getDepartures();
+                this.arrivals.payload.arrivals.forEach(arrival => {
+                    const item = document.createElement('li');
+                    item.innerText = arrival.origin;
+                    listEl.appendChild(item);
+                });
+                this.markup =
+                    `
+            <section class="station--wrapper">
+                <h2>${this.name}</h2>
+                <h3>Arrivals</h3>
+            </section>
+           `;
+                new Page(this.markup).render();
+                document.querySelector('.station--wrapper').appendChild(listEl);
+            });
+        }
+    }
+
+    const stations = new Stations();
+    const home = new Home(stations);
+    const router = new Router({
+        path: /stations\/(.*)/,
+        callback: (code) => __awaiter(void 0, void 0, void 0, function* () {
+            const stationObj = yield stations.reduceByCode(code);
+            const station = new Station(code, stationObj.namen.lang);
+            console.log(yield station.getArrivals());
+            station.render();
+        })
+    }, {
+        path: /trip\/from\/(.*)\/to\/(.*)/,
+        callback: (from, to) => {
+            alert(`trip from: ${from} to: ${to}`);
+        }
+    }, {
+        path: '', callback: () => {
+            home.render();
+        }
+    });
     // const home = new Home
     //
     // home.render()
