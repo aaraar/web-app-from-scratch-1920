@@ -1,50 +1,50 @@
 import {Page} from '../Page'
 import {Stations} from '../Stations'
+import {Station} from './Station'
 
-export class Home {
-    markup: string
-    stationListEl: HTMLElement
-    stationsSearchField: HTMLElement
-    stationsWrapper: HTMLElement
-    loadingAnimation: HTMLElement
-    Stations: Stations
+export class Home extends Page {
+    private stationListEl: HTMLElement
+    private stationsSearchField: HTMLElement & { value: string }
+    private stationsWrapper: HTMLElement
+    private Stations: Stations
+    private readonly searchFieldMarkup: string
 
     constructor(Stations) {
+        super('')
         this.Stations = Stations
-        this.markup =
-            `<section class="stations--wrapper">
-            <h2>NS stations in Nederland</h2>
-            <form action="">
-                <input type="text" class="stations--search-field" placeholder="Search for a station">
-                <button>search</button>
-            </form>
-            <img class="stations--loading" src="img/loading.svg" alt="Loading icon">
-            <ul class="stations--list">
-            </ul>
-        </section>`
+        this.searchFieldMarkup =
+            `<form action="">
+                    <input type="text" class="stations--search-field" placeholder="Search for a station">
+                    <button>search</button>
+             </form>`
     }
 
-    render() {
-        new Page(this.markup).render()
-        this.stationListEl = document.querySelector('.stations--list')
-        this.stationsSearchField = document.querySelector('.stations--search-field')
-        this.stationsWrapper = document.querySelector('.stations--wrapper')
-        this.loadingAnimation = document.querySelector('.stations--loading')
-        this.renderStations()
+    init() {
+        this.render('loading')
     }
+
     renderStations() {
-        this.Stations.getAll().then( stations => {
-            this.stationsWrapper.removeChild(this.loadingAnimation)
-            this.Stations.render(this.stationListEl, stations.payload)
+        this.Stations.getAll().then((stations: Station[]) => {
+            this.render('markup',
+                `<section class="stations--wrapper">
+                <h2>NS stations in Nederland</h2>
+                <ul class="stations--list">
+                </ul>
+                </section>`)
+            this.stationListEl = document.querySelector('.stations--list')
+            this.stationsWrapper = document.querySelector('.stations--wrapper')
+            document.querySelector('h2').insertAdjacentHTML('afterend', this.searchFieldMarkup)
+            this.stationsSearchField = document.querySelector('.stations--search-field')
+            this.Stations.render(this.stationListEl, stations)
             this.addFilter()
         })
     }
 
     addFilter() {
         this.stationsSearchField.addEventListener('keyup', async () => {
-            // @ts-ignore
             const query = this.stationsSearchField.value
-            const filteredData = await this.Stations.filterByNames(query)
+            const filteredData: Station[] = await this.Stations.filterByNames(query)
+            console.log(filteredData)
             this.Stations.render(this.stationListEl, filteredData)
         })
     }

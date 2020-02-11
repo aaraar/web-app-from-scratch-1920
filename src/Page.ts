@@ -2,19 +2,40 @@ export class Page {
     title: {
         content: string
         tag: string
-    };
-    dynamicElements: string[];
-    markup: string;
-    app: HTMLElement;
+    }
+    loadingMarkup: string
+    dynamicElements: string[]
+    markup: string
+    app: HTMLElement
+
     constructor(markup) {
         this.app = document.getElementById('app')
-        this.markup = markup.trim()
+        this.markup = markup
+        this.loadingMarkup =
+            `<section>
+                <img class="loading" src="img/loading.svg" alt="Loading icon">
+            </section>`
     }
+
     destroy() {
-        while (this.app.firstChild) this.app.removeChild(this.app.firstChild);
+        while (this.app.firstChild) this.app.removeChild(this.app.firstChild)
     }
-    render(){
-        this.destroy()
-        this.app.insertAdjacentHTML('afterbegin', this.markup)
+
+    render(mode: string = 'markup',
+           markup = this.markup,
+           adjacent: HTMLElement = this.app,
+           where: 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend' = 'afterbegin',
+           destroy: Boolean = true) {
+        switch (mode) {
+            case 'markup' :
+                if (destroy) this.destroy()
+                markup.trim()
+                adjacent.insertAdjacentHTML(where, markup)
+                break
+            case 'loading' :
+                if (destroy) this.destroy()
+                this.render('markup', this.loadingMarkup)
+                break
+        }
     }
 }

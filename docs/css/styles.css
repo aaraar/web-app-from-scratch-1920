@@ -17,7 +17,7 @@ main {
 
 header {
   background: #f7d417;
-  color: #000;
+  color: #003373;
   height: 30vh;
   display: flex;
   justify-content: center;
@@ -65,3 +65,6 @@ footer {
   transition: transform ease-out 0.2s; }
   .stations--item:hover {
     transform: translateY(-2px); }
+  .stations--item a {
+    text-decoration: none;
+    color: #fff; }

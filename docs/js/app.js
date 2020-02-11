@@ -28,59 +28,71 @@
     class Page {
         constructor(markup) {
             this.app = document.getElementById('app');
-            this.markup = markup.trim();
+            this.markup = markup;
+            this.loadingMarkup =
+                `<section>
+                <img class="loading" src="img/loading.svg" alt="Loading icon">
+            </section>`;
         }
         destroy() {
             while (this.app.firstChild)
                 this.app.removeChild(this.app.firstChild);
         }
-        render() {
-            this.destroy();
-            this.app.insertAdjacentHTML('afterbegin', this.markup);
+        render(mode = 'markup', markup = this.markup, adjacent = this.app, where = 'afterbegin', destroy = true) {
+            switch (mode) {
+                case 'markup':
+                    if (destroy)
+                        this.destroy();
+                    markup.trim();
+                    adjacent.insertAdjacentHTML(where, markup);
+                    break;
+                case 'loading':
+                    if (destroy)
+                        this.destroy();
+                    this.render('markup', this.loadingMarkup);
+                    break;
+            }
         }
     }
     //# sourceMappingURL=Page.js.map
 
-    class Home {
+    class Home extends Page {
         constructor(Stations) {
+            super('');
             this.Stations = Stations;
-            this.markup =
-                `<section class="stations--wrapper">
-            <h2>NS stations in Nederland</h2>
-            <form action="">
-                <input type="text" class="stations--search-field" placeholder="Search for a station">
-                <button>search</button>
-            </form>
-            <img class="stations--loading" src="img/loading.svg" alt="Loading icon">
-            <ul class="stations--list">
-            </ul>
-        </section>`;
+            this.searchFieldMarkup =
+                `<form action="">
+                    <input type="text" class="stations--search-field" placeholder="Search for a station">
+                    <button>search</button>
+             </form>`;
         }
-        render() {
-            new Page(this.markup).render();
-            this.stationListEl = document.querySelector('.stations--list');
-            this.stationsSearchField = document.querySelector('.stations--search-field');
-            this.stationsWrapper = document.querySelector('.stations--wrapper');
-            this.loadingAnimation = document.querySelector('.stations--loading');
-            this.renderStations();
+        init() {
+            this.render('loading');
         }
         renderStations() {
-            this.Stations.getAll().then(stations => {
-                this.stationsWrapper.removeChild(this.loadingAnimation);
-                this.Stations.render(this.stationListEl, stations.payload);
+            this.Stations.getAll().then((stations) => {
+                this.render('markup', `<section class="stations--wrapper">
+                <h2>NS stations in Nederland</h2>
+                <ul class="stations--list">
+                </ul>
+                </section>`);
+                this.stationListEl = document.querySelector('.stations--list');
+                this.stationsWrapper = document.querySelector('.stations--wrapper');
+                document.querySelector('h2').insertAdjacentHTML('afterend', this.searchFieldMarkup);
+                this.stationsSearchField = document.querySelector('.stations--search-field');
+                this.Stations.render(this.stationListEl, stations);
                 this.addFilter();
             });
         }
         addFilter() {
             this.stationsSearchField.addEventListener('keyup', () => __awaiter(this, void 0, void 0, function* () {
-                // @ts-ignore
                 const query = this.stationsSearchField.value;
                 const filteredData = yield this.Stations.filterByNames(query);
+                console.log(filteredData);
                 this.Stations.render(this.stationListEl, filteredData);
             }));
         }
     }
-    //# sourceMappingURL=Home.js.map
 
     const asyncApiCall = (endpoint, requestObject, queries = [['']]) => {
         const queryArray = queries.map(query => query.join('='));
@@ -96,159 +108,41 @@
     };
     //# sourceMappingURL=helpers.js.map
 
-    class Stations {
-        getAll() {
-            return __awaiter(this, void 0, void 0, function* () {
-                return yield this.getDataFromApi();
-            });
-        }
-        getDataFromApi() {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (localStorage.getItem('stations')) {
-                    return JSON.parse(localStorage.getItem('stations'));
-                }
-                else {
-                    return new Promise((resolve, reject) => {
-                        asyncApiCall('stations', {
-                            method: 'GET',
-                            headers: {
-                                'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                            }
-                        }).then(res => {
-                            console.log(res);
-                            localStorage.setItem('stations', JSON.stringify(res));
-                            resolve(res);
-                        });
-                    });
-                }
-            });
-        }
-        render(listEl, stations) {
-            // @ts-ignore
-            if (!listEl instanceof Element || !listEl instanceof HTMLDocument)
-                throw 'listEl is not an HTML element'; // https://stackoverflow.com/a/36894871
-            if (!stations[0])
-                throw 'stations is not an array';
-            while (listEl.firstChild)
-                listEl.removeChild(listEl.firstChild); // empties the ul
-            stations.forEach(station => {
-                const listItem = document.createElement('li');
-                const link = document.createElement('a');
-                const heading = document.createElement('h3');
-                const country = document.createElement('p');
-                let countryName;
-                listItem.classList.add('stations--item');
-                link.setAttribute('href', `#stations/${station.code}`);
-                listItem.setAttribute('data-station-name', station.namen.lang);
-                heading.innerText = station.namen.lang;
-                switch (station.land) {
-                    case 'NL':
-                        countryName = 'Nederland';
-                        break;
-                    case 'D':
-                        countryName = 'Duitsland';
-                        break;
-                    case 'B':
-                        countryName = 'België';
-                        break;
-                    case 'F':
-                        countryName = 'Frankrijk';
-                        break;
-                    case 'GB':
-                        countryName = 'Groot-Britannië';
-                        break;
-                    case 'A':
-                        countryName = 'Oostenrijk';
-                        break;
-                    case 'CH':
-                        countryName = 'Zwitserland';
-                        break;
-                }
-                country.innerText = `${countryName}`;
-                link.append(heading, country);
-                listItem.append(link);
-                listEl.appendChild(listItem);
-            });
-        }
-        filterByNames(query) {
-            return new Promise((resolve, reject) => {
-                this.getAll().then(stations => {
-                    resolve(stations.payload.filter(station => station.namen.lang.toLowerCase().includes(query.toLowerCase())));
-                });
-            });
-        }
-        reduceByCode(code) {
-            return new Promise((resolve, reject) => {
-                this.getAll().then(stations => {
-                    resolve(stations.payload.reduce((acc, curr) => acc = curr.code === code ? curr : acc));
-                });
-            });
-        }
-    }
-    //# sourceMappingURL=Stations.js.map
-
-    /*
-     * Created with https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d
-     * Edited for typescript to increase comprehension
-     * Check sourcecode at https://github.com/javascript-by-doing/create-a-modern-javascript-router
-     */
-    class Router {
-        constructor(...routes) {
-            this.clearSlashes = path => path.toString().replace(/\/$/, '').replace(/^\//, '');
-            this.checkRoute = () => {
-                if (this.currentUri === this.getEndpoint())
-                    return;
-                this.currentUri = this.getEndpoint();
-                this.routes.some(route => {
-                    const match = this.currentUri.match(route.path);
-                    if (match) {
-                        match.shift();
-                        route.callback.apply({}, match);
-                        return match;
-                    }
-                    return false;
-                });
-            };
-            this.routes = routes;
-            this.listen();
-        }
-        add(path, callback) {
-            this.routes.push({ path, callback });
-        }
-        remove(path) {
-            this.routes.forEach((route, index) => {
-                if (route.path === path) {
-                    this.routes.slice(index, 1);
-                    return this;
-                }
-                return this;
-            });
-        }
-        flush() {
-            this.routes = [];
-        }
-        getEndpoint(url = window.location.href) {
-            let endpoint = '';
-            const match = url.match(/#(.*)$/);
-            endpoint = match ? match[1] : '';
-            return this.clearSlashes(endpoint);
-        }
-        navigate(path = '') {
-            window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#${path}`;
-            return this;
-        }
-        listen() {
-            clearInterval(this.interval);
-            // @ts-ignore
-            this.interval = setInterval(this.checkRoute, 50);
-        }
-    }
-    //# sourceMappingURL=Router.js.map
-
-    class Station {
-        constructor(code, name) {
-            this.code = code;
-            this.name = name;
+    class Station extends Page {
+        constructor(station) {
+            super('');
+            this.code = station.code;
+            this.name = station.namen.lang;
+            switch (station.land) {
+                case 'NL':
+                    this.country = 'Nederland';
+                    break;
+                case 'D':
+                    this.country = 'Duitsland';
+                    break;
+                case 'B':
+                    this.country = 'België';
+                    break;
+                case 'F':
+                    this.country = 'Frankrijk';
+                    break;
+                case 'GB':
+                    this.country = 'Groot-Britannië';
+                    break;
+                case 'A':
+                    this.country = 'Oostenrijk';
+                    break;
+                case 'CH':
+                    this.country = 'Zwitserland';
+                    break;
+            }
+            this.markup =
+                `<li class="stations--item">
+                <a href="/#stations/${this.code}">
+                    <h3>${this.name}</h3>
+                    <p>${this.country}</p>
+                </a>
+            </li>`;
         }
         getArrivals() {
             return __awaiter(this, void 0, void 0, function* () {
@@ -288,8 +182,9 @@
                 });
             });
         }
-        render() {
+        renderDetails() {
             return __awaiter(this, void 0, void 0, function* () {
+                this.render('loading');
                 const listEl = document.createElement('ul');
                 this.arrivals = yield this.getArrivals();
                 this.departures = yield this.getDepartures();
@@ -305,35 +200,184 @@
                 <h3>Arrivals</h3>
             </section>
            `;
-                new Page(this.markup).render();
+                this.render();
                 document.querySelector('.station--wrapper').appendChild(listEl);
             });
         }
     }
+    //# sourceMappingURL=Station.js.map
 
-    const stations = new Stations();
-    const home = new Home(stations);
-    const router = new Router({
-        path: /stations\/(.*)/,
-        callback: (code) => __awaiter(void 0, void 0, void 0, function* () {
-            const stationObj = yield stations.reduceByCode(code);
-            const station = new Station(code, stationObj.namen.lang);
-            console.log(yield station.getArrivals());
-            station.render();
-        })
-    }, {
-        path: /trip\/from\/(.*)\/to\/(.*)/,
-        callback: (from, to) => {
-            alert(`trip from: ${from} to: ${to}`);
+    class Stations {
+        constructor() {
+            this.getDataFromApi = () => __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve, reject) => {
+                    if (localStorage.getItem('stations')) {
+                        const stations = JSON.parse(localStorage.getItem('stations'));
+                        stations.forEach(station => {
+                            this.stations.push(new Station(station));
+                        });
+                        resolve(this.stations);
+                    }
+                    else {
+                        asyncApiCall('stations', {
+                            method: 'GET',
+                            headers: {
+                                'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                            }
+                        }).then((res) => {
+                            localStorage.setItem('stations', JSON.stringify(res.payload));
+                            res.payload.forEach(station => {
+                                this.stations.push(new Station(station));
+                            });
+                            resolve(this.stations);
+                        });
+                    }
+                });
+            });
+            this.stations = [];
         }
-    }, {
-        path: '', callback: () => {
-            home.render();
+        getAll() {
+            return __awaiter(this, void 0, void 0, function* () {
+                return yield this.getDataFromApi();
+            });
         }
-    });
-    // const home = new Home
-    //
-    // home.render()
+        render(listEl, stations, limit = 20) {
+            // @ts-ignore
+            if (!listEl instanceof Element || !listEl instanceof HTMLDocument)
+                throw 'listEl is not an HTML element'; // https://stackoverflow.com/a/36894871
+            if (!stations[0])
+                throw 'stations is not an array';
+            while (listEl.firstChild)
+                listEl.removeChild(listEl.firstChild); // empties the ul
+            console.log(stations);
+            stations.forEach(station => {
+                // const listItem = document.createElement('li')
+                // const link = document.createElement('a')
+                // const heading = document.createElement('h3')
+                // const country = document.createElement('p')
+                // listItem.classList.add('stations--item')
+                // link.setAttribute('href', `#stations/${station.code}`)
+                // listItem.setAttribute('data-station-name', station.name)
+                // heading.innerText = station.name
+                // country.innerText = station.country
+                // link.append(heading, country)
+                // listItem.append(link)
+                // listEl.appendChild(listItem)
+                station.render('markup', station.markup, listEl, 'beforeend', false);
+            });
+        }
+        filterByNames(query) {
+            return new Promise((resolve, reject) => {
+                this.getAll().then((stations) => {
+                    resolve(stations.filter((station) => station.name.toLowerCase().includes(query.toLowerCase())));
+                });
+            });
+        }
+        reduceByCode(code) {
+            return new Promise((resolve, reject) => {
+                this.getAll().then((stations) => {
+                    resolve(stations.reduce((acc, curr) => acc = curr.code === code ? curr : acc));
+                });
+            });
+        }
+    }
+
+    /*
+     * Created with https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d
+     * Edited for typescript to increase comprehension
+     * Check sourcecode at https://github.com/javascript-by-doing/create-a-modern-javascript-router
+     */
+    class Router {
+        constructor(...routes) {
+            this.clearSlashes = path => path.toString().replace(/\/$/, '').replace(/^\//, '');
+            this.checkRoute = () => {
+                if (this.currentUri === this.getEndpoint())
+                    return;
+                this.currentUri = this.getEndpoint();
+                this.routes.some(route => {
+                    const match = this.currentUri.match(route.path);
+                    if (match) {
+                        match.shift();
+                        route.callback.apply({}, match);
+                        return match;
+                    }
+                    return false;
+                });
+            };
+            this.routes = routes.map(route => {
+                route.path = route.path !== '' ? this.convertRouteToRegExp(route.path) : '';
+                return route;
+            });
+            this.listen();
+        }
+        add(path, callback) {
+            path = this.convertRouteToRegExp(path);
+            this.routes.push({ path, callback });
+        }
+        remove(path) {
+            this.routes.forEach((route, index) => {
+                if (route.path === path) {
+                    this.routes.slice(index, 1);
+                    return this;
+                }
+                return this;
+            });
+        }
+        flush() {
+            this.routes = [];
+        }
+        convertRouteToRegExp(route) {
+            const match = route.match(/(.*)$/);
+            let endpoint = match ? match[1] : '';
+            endpoint = this.clearSlashes(endpoint).split('/');
+            const regexp = endpoint.map(point => point[0] === ':' ? '(.*)' : point).join('\\/');
+            return new RegExp(regexp);
+        }
+        getEndpoint(url = window.location.href) {
+            let endpoint = '';
+            const match = url.match(/#(.*)$/);
+            endpoint = match ? match[1] : '';
+            return this.clearSlashes(endpoint);
+        }
+        navigate(path = '') {
+            window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#${path}`;
+            return this;
+        }
+        listen() {
+            this.checkRoute();
+            window.addEventListener('hashchange', this.checkRoute);
+        }
+    }
+    //# sourceMappingURL=Router.js.map
+
+    class App {
+        constructor() {
+            this.stations = new Stations();
+            this.home = new Home(this.stations);
+        }
+        init() {
+            this.router = new Router({
+                path: '/stations/:code/',
+                callback: (code) => __awaiter(this, void 0, void 0, function* () {
+                    const station = yield this.stations.reduceByCode(code);
+                    //@ts-ignore
+                    yield station.renderDetails();
+                })
+            }, {
+                path: '/trip/from/:from/to/:to/',
+                callback: (from, to) => {
+                    alert(`trip from: ${from} to: ${to}`);
+                }
+            }, {
+                path: '', callback: () => {
+                    this.home.init();
+                    this.home.renderStations();
+                }
+            });
+        }
+    }
+    const app = new App;
+    app.init();
     //# sourceMappingURL=app.js.map
 
 }());

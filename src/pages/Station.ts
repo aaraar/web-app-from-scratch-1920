@@ -1,24 +1,63 @@
 import {asyncApiCall} from '../helpers'
 import {Page} from '../Page'
 
-export class Station {
+export class Station extends Page {
     code: string
-    arrivals: Promise<unknown>
-    markup: string
-    name: string
-    departures: Promise<unknown>
+    private arrivals: Promise<{}> | {
+        payload?: {
+            arrivals: [{
+                origin: string
+            }]
+        }
+    }
+    private departures: Promise<{}> | {}
+    readonly name: string
+    private readonly country: any
 
-    constructor(code, name) {
-        this.code = code
-        this.name = name
+    constructor(station) {
+        super('')
+        this.code = station.code
+        this.name = station.namen.lang
+        switch (station.land) {
+            case 'NL':
+                this.country = 'Nederland'
+                break
+            case 'D':
+                this.country = 'Duitsland'
+                break
+            case 'B':
+                this.country = 'België'
+                break
+            case 'F':
+                this.country = 'Frankrijk'
+                break
+            case 'GB':
+                this.country = 'Groot-Britannië'
+                break
+            case 'A':
+                this.country = 'Oostenrijk'
+                break
+            case 'CH':
+                this.country = 'Zwitserland'
+                break
+        }
+        this.markup =
+            `<li class="stations--item">
+                <a href="/#stations/${this.code}">
+                    <h3>${this.name}</h3>
+                    <p>${this.country}</p>
+                </a>
+            </li>`
     }
 
     async getArrivals() {
         return await this.initArrivalData()
     }
+
     async getDepartures() {
         return await this.initDepartureData()
     }
+
     async initArrivalData() {
         return new Promise((resolve, reject) => {
             asyncApiCall(
@@ -32,6 +71,7 @@ export class Station {
             })
         })
     }
+
     async initDepartureData() {
         return new Promise((resolve, reject) => {
             asyncApiCall(
@@ -45,7 +85,9 @@ export class Station {
             })
         })
     }
-    async render() {
+
+    async renderDetails() {
+        this.render('loading')
         const listEl = document.createElement('ul')
         this.arrivals = await this.getArrivals()
         this.departures = await this.getDepartures()
@@ -61,7 +103,7 @@ export class Station {
                 <h3>Arrivals</h3>
             </section>
            `
-        new Page(this.markup).render()
+        this.render()
         document.querySelector('.station--wrapper').appendChild(listEl)
     }
 }

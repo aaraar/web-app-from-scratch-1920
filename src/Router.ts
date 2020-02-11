@@ -7,7 +7,7 @@
 import Timeout = NodeJS.Timeout
 
 export interface Route {
-    path: RegExp | '',
+    path: RegExp | string
     callback: any
 }
 
@@ -17,11 +17,15 @@ export class Router {
     interval: Timeout
 
     constructor(...routes: Route[]) {
-        this.routes = routes
+        this.routes = routes.map(route => {
+            route.path = route.path !== '' ? this.convertRouteToRegExp(route.path) : ''
+            return route
+        } )
         this.listen()
     }
 
     add(path, callback) {
+        path = this.convertRouteToRegExp(path)
         this.routes.push({path, callback})
     }
 
@@ -37,6 +41,13 @@ export class Router {
 
     flush() {
         this.routes = []
+    }
+    convertRouteToRegExp (route) {
+        const match = route.match(/(.*)$/)
+        let endpoint = match ? match[1] : ''
+        endpoint = this.clearSlashes(endpoint).split('/')
+        const regexp = endpoint.map(point => point[0] === ':' ? '(.*)' : point).join('\\/')
+        return new RegExp(regexp)
     }
 
     clearSlashes = path => path.toString().replace(/\/$/, '').replace(/^\//, '')
@@ -54,15 +65,13 @@ export class Router {
     }
 
     listen() {
-        clearInterval(this.interval)
-        // @ts-ignore
-        this.interval = setInterval(this.checkRoute, 50)
+        this.checkRoute()
+        window.addEventListener('hashchange', this.checkRoute)
     }
 
     checkRoute = () => {
         if (this.currentUri === this.getEndpoint()) return
         this.currentUri = this.getEndpoint()
-
         this.routes.some( route => {
             const match = this.currentUri.match(route.path)
             if (match) {
