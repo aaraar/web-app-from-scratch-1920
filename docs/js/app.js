@@ -60,17 +60,42 @@
         constructor(Stations) {
             super('');
             this.Stations = Stations;
-            this.searchFieldMarkup =
-                `<form action="">
-                    <input type="text" class="stations--search-field" placeholder="Search for a station">
-                    <button>search</button>
+            this.limit = 20;
+            this.filterMarkup =
+                `<form action="" class="stations-form">
+                    <label for="stations-search-field">
+                        Search:
+                        <input type="text" name="stations-search-field" placeholder="Search a station" id="stations-search-field">
+                    </label>
+                    <label for="stations-limit">
+                        Results
+                        <select name="stations-limit" id="stations-search-limit">
+                            <option value="20">20</option>
+                            <option value="40">40</option>
+                            <option value="60">60</option>
+                        </select>
+                    </label>
+                    <label for="stations-country">
+                        From
+                        <select name="stations-country" id="stations-search-country">
+                            <option value="NL">The Netherlands</option>
+                            <option value="B">Belgium</option>
+                            <option value="D">Germany</option>
+                            <option value="F">France</option>
+                            <option value="A">Austria</option>
+                            <option value="CH">Switzerland</option>
+                            <option value="GB">Great-Britain</option>
+                            <option value="ALL">All</option>
+                        </select>
+                    </label>
              </form>`;
         }
         init() {
             this.render('loading');
         }
         renderStations() {
-            this.Stations.getAll().then((stations) => {
+            this.Stations.getAll().then((stations) => __awaiter(this, void 0, void 0, function* () {
+                this.stations = stations;
                 this.render('markup', `<section class="stations--wrapper">
                 <h2>NS stations in Nederland</h2>
                 <ul class="stations--list">
@@ -78,19 +103,26 @@
                 </section>`);
                 this.stationListEl = document.querySelector('.stations--list');
                 this.stationsWrapper = document.querySelector('.stations--wrapper');
-                document.querySelector('h2').insertAdjacentHTML('afterend', this.searchFieldMarkup);
-                this.stationsSearchField = document.querySelector('.stations--search-field');
-                this.Stations.render(this.stationListEl, stations);
-                this.addFilter();
-            });
-        }
-        addFilter() {
-            this.stationsSearchField.addEventListener('keyup', () => __awaiter(this, void 0, void 0, function* () {
-                const query = this.stationsSearchField.value;
-                const filteredData = yield this.Stations.filterByNames(query);
-                console.log(filteredData);
-                this.Stations.render(this.stationListEl, filteredData);
+                document.querySelector('h2').insertAdjacentHTML('afterend', this.filterMarkup);
+                this.stationsSearchField = document.querySelector('#stations-search-field');
+                this.stationsLimitSelect = document.querySelector('#stations-search-limit');
+                this.stationsCountry = document.querySelector('#stations-search-country');
+                const filteredStations = yield this.Stations.filter(stations);
+                this.Stations.render(this.stationListEl, filteredStations);
+                this.addFilters();
             }));
+        }
+        addFilters() {
+            const filter = () => __awaiter(this, void 0, void 0, function* () {
+                const query = this.stationsSearchField.value;
+                const limit = this.stationsLimitSelect.value;
+                const country = this.stationsCountry.value;
+                const filteredData = yield this.Stations.filter(this.stations, query, country, limit);
+                this.Stations.render(this.stationListEl, filteredData);
+            });
+            this.stationsSearchField.addEventListener('keydown', filter);
+            this.stationsLimitSelect.addEventListener('change', filter);
+            this.stationsCountry.addEventListener('change', filter);
         }
     }
 
@@ -113,27 +145,31 @@
             super('');
             this.code = station.code;
             this.name = station.namen.lang;
+            this.countryCode = station.land;
             switch (station.land) {
+                case 'ERROR':
+                    this.country = 'Try redefining your search';
+                    break;
                 case 'NL':
-                    this.country = 'Nederland';
+                    this.country = 'The Netherlands';
                     break;
                 case 'D':
-                    this.country = 'Duitsland';
+                    this.country = 'Germany';
                     break;
                 case 'B':
-                    this.country = 'België';
+                    this.country = 'Belgium';
                     break;
                 case 'F':
-                    this.country = 'Frankrijk';
+                    this.country = 'France';
                     break;
                 case 'GB':
-                    this.country = 'Groot-Britannië';
+                    this.country = 'Great-Britain';
                     break;
                 case 'A':
-                    this.country = 'Oostenrijk';
+                    this.country = 'Austria';
                     break;
                 case 'CH':
-                    this.country = 'Zwitserland';
+                    this.country = 'Switzerland';
                     break;
             }
             this.markup =
@@ -226,7 +262,7 @@
                             }
                         }).then((res) => {
                             localStorage.setItem('stations', JSON.stringify(res.payload));
-                            res.payload.forEach(station => {
+                            res.payload.forEach((station) => {
                                 this.stations.push(new Station(station));
                             });
                             resolve(this.stations);
@@ -241,43 +277,33 @@
                 return yield this.getDataFromApi();
             });
         }
-        render(listEl, stations, limit = 20) {
+        render(listEl, stations, country = 'NL') {
             // @ts-ignore
             if (!listEl instanceof Element || !listEl instanceof HTMLDocument)
                 throw 'listEl is not an HTML element'; // https://stackoverflow.com/a/36894871
-            if (!stations[0])
-                throw 'stations is not an array';
+            if (!stations[0]) {
+                stations[0] = new Station({ code: 'ERROR', namen: { lang: 'No stations found' }, land: 'ERROR' });
+            }
             while (listEl.firstChild)
                 listEl.removeChild(listEl.firstChild); // empties the ul
-            console.log(stations);
             stations.forEach(station => {
-                // const listItem = document.createElement('li')
-                // const link = document.createElement('a')
-                // const heading = document.createElement('h3')
-                // const country = document.createElement('p')
-                // listItem.classList.add('stations--item')
-                // link.setAttribute('href', `#stations/${station.code}`)
-                // listItem.setAttribute('data-station-name', station.name)
-                // heading.innerText = station.name
-                // country.innerText = station.country
-                // link.append(heading, country)
-                // listItem.append(link)
-                // listEl.appendChild(listItem)
                 station.render('markup', station.markup, listEl, 'beforeend', false);
             });
         }
-        filterByNames(query) {
+        filter(stations = [], query = '', country = 'NL', limit = 20) {
             return new Promise((resolve, reject) => {
-                this.getAll().then((stations) => {
-                    resolve(stations.filter((station) => station.name.toLowerCase().includes(query.toLowerCase())));
-                });
-            });
-        }
-        reduceByCode(code) {
-            return new Promise((resolve, reject) => {
-                this.getAll().then((stations) => {
-                    resolve(stations.reduce((acc, curr) => acc = curr.code === code ? curr : acc));
-                });
+                if (!stations[0]) {
+                    console.error('Empty station array in filter');
+                    this.getAll().then((res) => {
+                        filter(res);
+                    });
+                }
+                else
+                    filter(stations);
+                function filter(stationArray) {
+                    resolve(stationArray.filter((station) => station.name.toLowerCase().includes(query.toLowerCase())
+                        && (station.countryCode === country || country === 'ALL')).slice(0, limit));
+                }
             });
         }
     }

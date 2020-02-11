@@ -1,6 +1,8 @@
 import {asyncApiCall} from '../helpers'
 import {Page} from '../Page'
 
+export type CountryCode = 'ERROR' | 'NL' | 'D' | 'B' | 'F' | 'GB' | 'A' | 'CH'
+
 export class Station extends Page {
     code: string
     private arrivals: Promise<{}> | {
@@ -13,32 +15,37 @@ export class Station extends Page {
     private departures: Promise<{}> | {}
     readonly name: string
     private readonly country: any
+    countryCode: CountryCode
 
-    constructor(station) {
+    constructor(station: {code: string, namen:{lang: string}, land: CountryCode}) {
         super('')
         this.code = station.code
         this.name = station.namen.lang
+        this.countryCode = station.land
         switch (station.land) {
+            case 'ERROR':
+                this.country = 'Try redefining your search'
+                break
             case 'NL':
-                this.country = 'Nederland'
+                this.country = 'The Netherlands'
                 break
             case 'D':
-                this.country = 'Duitsland'
+                this.country = 'Germany'
                 break
             case 'B':
-                this.country = 'België'
+                this.country = 'Belgium'
                 break
             case 'F':
-                this.country = 'Frankrijk'
+                this.country = 'France'
                 break
             case 'GB':
-                this.country = 'Groot-Britannië'
+                this.country = 'Great-Britain'
                 break
             case 'A':
-                this.country = 'Oostenrijk'
+                this.country = 'Austria'
                 break
             case 'CH':
-                this.country = 'Zwitserland'
+                this.country = 'Switzerland'
                 break
         }
         this.markup =

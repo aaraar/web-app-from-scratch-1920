@@ -22,4 +22,20 @@
       color: $light;
     }
   }
+  &-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    max-width: 600px;
+    flex-wrap: wrap;
+    label{
+      margin: 0.5em;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      input, select {
+        margin-left: 0.5em;
+      }
+    }
+  }
 }
