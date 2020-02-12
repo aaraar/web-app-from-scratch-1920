@@ -125,6 +125,7 @@
             this.stationsCountry.addEventListener('change', filter);
         }
     }
+    //# sourceMappingURL=Home.js.map
 
     const asyncApiCall = (endpoint, requestObject, queries = [['']]) => {
         const queryArray = queries.map(query => query.join('='));
@@ -306,7 +307,15 @@
                 }
             });
         }
+        reduceByCode(code) {
+            return new Promise((resolve, reject) => {
+                this.getAll().then((stations) => {
+                    resolve(stations.reduce((acc, curr) => acc = curr.code === code ? curr : acc));
+                });
+            });
+        }
     }
+    //# sourceMappingURL=Stations.js.map
 
     /*
      * Created with https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d
@@ -353,6 +362,8 @@
             this.routes = [];
         }
         convertRouteToRegExp(route) {
+            if (route === '/')
+                return new RegExp(/\//);
             const match = route.match(/(.*)$/);
             let endpoint = match ? match[1] : '';
             endpoint = this.clearSlashes(endpoint).split('/');
@@ -360,12 +371,14 @@
             return new RegExp(regexp);
         }
         getEndpoint(url = window.location.href) {
+            if (url.split('/').length === 4 && url.split('/')[3] === '')
+                return '/';
             let endpoint = '';
             const match = url.match(/#(.*)$/);
-            endpoint = match ? match[1] : '';
+            endpoint = match ? match[1] : '/';
             return this.clearSlashes(endpoint);
         }
-        navigate(path = '') {
+        navigate(path = '/') {
             window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#${path}`;
             return this;
         }
@@ -386,7 +399,6 @@
                 path: '/stations/:code/',
                 callback: (code) => __awaiter(this, void 0, void 0, function* () {
                     const station = yield this.stations.reduceByCode(code);
-                    //@ts-ignore
                     yield station.renderDetails();
                 })
             }, {
@@ -395,15 +407,19 @@
                     alert(`trip from: ${from} to: ${to}`);
                 }
             }, {
-                path: '', callback: () => {
+                path: '/',
+                callback: () => __awaiter(this, void 0, void 0, function* () {
                     this.home.init();
                     this.home.renderStations();
+                })
+            }, {
+                path: '', callback: () => {
+                    new Page('<h2>404 Page not found</h2>').render();
                 }
             });
         }
     }
     const app = new App;
     app.init();
-    //# sourceMappingURL=app.js.map
 
 }());

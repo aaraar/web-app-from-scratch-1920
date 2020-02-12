@@ -2,8 +2,7 @@ import './scss/main.scss'
 import {Home} from './pages/Home'
 import {Stations} from './Stations'
 import {Router} from './Router'
-import {Station} from './pages/Station'
-
+import {Page} from './Page'
 
 class App {
     stations: Stations
@@ -20,8 +19,7 @@ class App {
             {
                 path: '/stations/:code/',
                 callback: async (code) => {
-                    const station = await this.stations.reduceByCode(code)
-                    //@ts-ignore
+                    const station: any = await this.stations.reduceByCode(code)
                     await station.renderDetails()
                 }
             },
@@ -32,9 +30,15 @@ class App {
                 }
             },
             {
-                path: '', callback: () => {
+                path: '/',
+                callback: async () => {
                     this.home.init()
                     this.home.renderStations()
+                }
+            },
+            {
+                path: '', callback: () => {
+                    new Page('<h2>404 Page not found</h2>').render()
                 }
             })
     }

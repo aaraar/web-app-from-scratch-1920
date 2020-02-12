@@ -23,6 +23,8 @@ Ter voorkoming van congestie of overbelasting van het systeem hanteert NS een ge
 en 180 requests per 5 minuten voor de price information api.
 Bij overmatig gebruik van de NS API kan NS de toegang tot de NS API beperken of blokkeren.
 ## Interaction
+The diagram below shows a simplified flow of the 2 major application flows
+![Image of Yaktocat](./documentation/interaction.png)
 ## Design patterns and best practices  
 ## Deature wishlist / backlog
 - Search for a station and it's departing trains from each track
@@ -36,23 +38,23 @@ Bij overmatig gebruik van de NS API kan NS de toegang tot de NS API beperken of 
 {
 "EVACode": "7004428",
 "UICCode": "7015400",
-code: "STP",
-heeftFaciliteiten: true,
-heeftReisassistentie: false,
-heeftVertrektijden: true,
-land: "GB",
-lat: 51.531437,
-lng: -0.126136,
-naderenRadius: 1,
-namen: {
-kort: "London StP",
-lang: "London St. Pancras Int.",
-middel: "London St. P Int"
-},​​​​
-radius: 1,
-sporen: [],​​​​​
-stationType: "MEGA_STATION",
-synoniemen: []
+"code": "STP",
+"heeftFaciliteiten": true,
+"heeftReisassistentie": false,
+"heeftVertrektijden": true,
+"land": "GB",
+"lat": 51.531437,
+"lng": -0.126136,
+"naderenRadius": 1,
+"namen": {
+"kort": "London StP",
+"lang": "London St. Pancras Int.",
+"middel": "London St. P Int"
+},
+"radius": 1,
+"sporen": [],
+"stationType": "MEGA_STATION",
+"synoniemen": []
 }
 ```
 

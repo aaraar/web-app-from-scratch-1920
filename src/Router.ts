@@ -14,13 +14,12 @@ export interface Route {
 export class Router {
     currentUri: string
     routes: Route[]
-    interval: Timeout
 
     constructor(...routes: Route[]) {
         this.routes = routes.map(route => {
             route.path = route.path !== '' ? this.convertRouteToRegExp(route.path) : ''
             return route
-        } )
+        })
         this.listen()
     }
 
@@ -42,7 +41,9 @@ export class Router {
     flush() {
         this.routes = []
     }
-    convertRouteToRegExp (route) {
+
+    convertRouteToRegExp(route) {
+        if (route === '/') return new RegExp(/\//)
         const match = route.match(/(.*)$/)
         let endpoint = match ? match[1] : ''
         endpoint = this.clearSlashes(endpoint).split('/')
@@ -53,13 +54,14 @@ export class Router {
     clearSlashes = path => path.toString().replace(/\/$/, '').replace(/^\//, '')
 
     getEndpoint(url: string = window.location.href) {
+        if (url.split('/').length === 4 && url.split('/')[3] === '') return '/'
         let endpoint = ''
         const match = url.match(/#(.*)$/)
-        endpoint = match ? match[1] : ''
+        endpoint = match ? match[1] : '/'
         return this.clearSlashes(endpoint)
     }
 
-    navigate(path = '') {
+    navigate(path = '/') {
         window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#${path}`
         return this
     }
@@ -72,7 +74,7 @@ export class Router {
     checkRoute = () => {
         if (this.currentUri === this.getEndpoint()) return
         this.currentUri = this.getEndpoint()
-        this.routes.some( route => {
+        this.routes.some(route => {
             const match = this.currentUri.match(route.path)
             if (match) {
                 match.shift()

@@ -77,4 +77,11 @@ export class Stations {
             }
         })
     }
+    reduceByCode(code) {
+        return new Promise((resolve, reject) => {
+            this.getAll().then((stations: Station[]) => {
+                resolve(stations.reduce((acc, curr) => acc = curr.code === code ? curr : acc))
+            })
+        })
+    }
 }
