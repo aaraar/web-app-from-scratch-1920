@@ -1,7 +1,13 @@
 [Live Demo](https://aaraar.github.io/web-app-from-scratch-1920/)]
+    
+![Header image](./documentation/ns-header.png)
  
 ## App goal
-Display train and trip information from NS
+- Display train and trip information from NS
+- Planning trips and showing availability of seats in each wagon
+    
+![App screenshot](./documentation/screenshot.png)
+    
 ## Actors in app
 1. Identify the purpose of the app
     - A simple way to check the availablity of seats in an NS-train wagon 
@@ -15,6 +21,12 @@ Display train and trip information from NS
     - Users can select a station (departure): App->Stations->Station(->Details)
     - Users select a destination (arrival): App->Stations->Station(->Details)
     - Users can view trip information: App->Trip
+
+## Interaction
+The diagram below shows a simplified flow of the 2 major application flows
+    
+![Image of Interaction Diagram](./documentation/interaction.png)
+
 ## API & limitations
 *NS api's*    
 Hoewel NS er naar streeft de NS API doorlopend beschikbaar te houden, kan NS dat niet garanderen. 
@@ -22,10 +34,6 @@ Ter voorkoming van congestie of overbelasting van het systeem hanteert NS een ge
 1.000 requests per 5 minuten voor de travel information api
 en 180 requests per 5 minuten voor de price information api.
 Bij overmatig gebruik van de NS API kan NS de toegang tot de NS API beperken of blokkeren.
-## Interaction
-The diagram below shows a simplified flow of the 2 major application flows
-    
-![Image of Interaction Diagram](./documentation/interaction.png)
 
 ## Design patterns and best practices  
 ## Deature wishlist / backlog
