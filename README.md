@@ -1,4 +1,4 @@
-[Live Demo](https://aaraar.github.io/web-app-from-scratch-1920/)]
+[Live Demo](https://aaraar.github.io/web-app-from-scratch-1920/)
     
 ![Header image](./documentation/ns-header.png)
  
@@ -21,6 +21,9 @@
     - Users can select a station (departure): App->Stations->Station(->Details)
     - Users select a destination (arrival): App->Stations->Station(->Details)
     - Users can view trip information: App->Trip
+
+![Image of Actor Diagram](./documentation/actor.png)
+
 
 ## Interaction
 The diagram below shows a simplified flow of the 2 major application flows
