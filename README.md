@@ -24,7 +24,9 @@ en 180 requests per 5 minuten voor de price information api.
 Bij overmatig gebruik van de NS API kan NS de toegang tot de NS API beperken of blokkeren.
 ## Interaction
 The diagram below shows a simplified flow of the 2 major application flows
-![Image of Yaktocat](./documentation/interaction.png)
+    
+![Image of Interaction Diagram](./documentation/interaction.png)
+
 ## Design patterns and best practices  
 ## Deature wishlist / backlog
 - Search for a station and it's departing trains from each track
