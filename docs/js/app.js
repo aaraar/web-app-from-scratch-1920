@@ -25,8 +25,73 @@
         });
     }
 
-    class Page {
+    class Api {
+        fetch(endpoint, requestObject, queries = [['']]) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const queryArray = queries.map(query => query.join('='));
+                const query = queryArray.join('&');
+                return new Promise((resolve, reject) => {
+                    fetch(`https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/${endpoint}?${query}`, requestObject).then(res => {
+                        if (res.ok)
+                            resolve(res.json());
+                        else
+                            reject(res);
+                    });
+                });
+            });
+        }
+        getStations() {
+            return new Promise((resolve, reject) => {
+                if (localStorage.getItem('stations')) {
+                    this.rawStations = JSON.parse(localStorage.getItem('stations'));
+                    resolve(this.rawStations);
+                }
+                else {
+                    this.fetch('stations', {
+                        method: 'GET',
+                        headers: {
+                            'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                        }
+                    }).then((res) => {
+                        localStorage.setItem('stations', JSON.stringify(res.payload));
+                        this.rawStations = res.payload;
+                        resolve(this.rawStations);
+                    });
+                }
+            });
+        }
+        getArrivals(code) {
+            return new Promise((resolve, reject) => {
+                console.log(code);
+                this.fetch('arrivals', {
+                    method: 'GET',
+                    headers: {
+                        'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                    }
+                }, [['station', code]]).then(res => {
+                    console.log(res);
+                    resolve(res);
+                });
+            });
+        }
+        getDepartures(code) {
+            return new Promise((resolve, reject) => {
+                this.fetch('departures', {
+                    method: 'GET',
+                    headers: {
+                        'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
+                    }
+                }, [['station', code]]).then(res => {
+                    resolve(res);
+                });
+            });
+        }
+    }
+    //# sourceMappingURL=Api.js.map
+
+    class Page extends Api {
         constructor(markup) {
+            super();
             this.app = document.getElementById('app');
             this.markup = markup;
             this.loadingMarkup =
@@ -127,20 +192,6 @@
     }
     //# sourceMappingURL=Home.js.map
 
-    const asyncApiCall = (endpoint, requestObject, queries = [['']]) => {
-        const queryArray = queries.map(query => query.join('='));
-        const query = queryArray.join('&');
-        return new Promise((resolve, reject) => {
-            fetch(`https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/${endpoint}?${query}`, requestObject).then(res => {
-                if (res.ok)
-                    resolve(res.json());
-                else
-                    reject(res);
-            });
-        });
-    };
-    //# sourceMappingURL=helpers.js.map
-
     class Station extends Page {
         constructor(station) {
             super('');
@@ -181,51 +232,20 @@
                 </a>
             </li>`;
         }
-        getArrivals() {
+        init() {
             return __awaiter(this, void 0, void 0, function* () {
-                return yield this.initArrivalData();
-            });
-        }
-        getDepartures() {
-            return __awaiter(this, void 0, void 0, function* () {
-                return yield this.initDepartureData();
-            });
-        }
-        initArrivalData() {
-            return __awaiter(this, void 0, void 0, function* () {
-                return new Promise((resolve, reject) => {
-                    asyncApiCall('arrivals', {
-                        method: 'GET',
-                        headers: {
-                            'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                        }
-                    }, [['station', this.code]]).then(res => {
-                        resolve(res);
-                    });
-                });
-            });
-        }
-        initDepartureData() {
-            return __awaiter(this, void 0, void 0, function* () {
-                return new Promise((resolve, reject) => {
-                    asyncApiCall('departures', {
-                        method: 'GET',
-                        headers: {
-                            'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                        }
-                    }, [['station', this.code]]).then(res => {
-                        resolve(res);
-                    });
-                });
+                this.arrivals = this.getArrivals(this.code);
+                this.departures = this.getDepartures(this.code);
             });
         }
         renderDetails() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.render('loading');
                 const listEl = document.createElement('ul');
-                this.arrivals = yield this.getArrivals();
-                this.departures = yield this.getDepartures();
-                this.arrivals.payload.arrivals.forEach(arrival => {
+                const arrivals = yield this.arrivals;
+                const departures = yield this.departures;
+                //@ts-ignore
+                arrivals.payload.arrivals.forEach(arrival => {
                     const item = document.createElement('li');
                     item.innerText = arrival.origin;
                     listEl.appendChild(item);
@@ -246,36 +266,14 @@
 
     class Stations {
         constructor() {
-            this.getDataFromApi = () => __awaiter(this, void 0, void 0, function* () {
-                return new Promise((resolve, reject) => {
-                    if (localStorage.getItem('stations')) {
-                        const stations = JSON.parse(localStorage.getItem('stations'));
-                        stations.forEach(station => {
-                            this.stations.push(new Station(station));
-                        });
-                        resolve(this.stations);
-                    }
-                    else {
-                        asyncApiCall('stations', {
-                            method: 'GET',
-                            headers: {
-                                'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                            }
-                        }).then((res) => {
-                            localStorage.setItem('stations', JSON.stringify(res.payload));
-                            res.payload.forEach((station) => {
-                                this.stations.push(new Station(station));
-                            });
-                            resolve(this.stations);
-                        });
-                    }
-                });
-            });
             this.stations = [];
+            this.api = new Api();
         }
         getAll() {
             return __awaiter(this, void 0, void 0, function* () {
-                return yield this.getDataFromApi();
+                let stations = yield this.api.getStations();
+                //@ts-ignore
+                return stations.map(station => new Station(station));
             });
         }
         render(listEl, stations, country = 'NL') {
@@ -371,7 +369,7 @@
             return new RegExp(regexp);
         }
         getEndpoint(url = window.location.href) {
-            if (url.split('/').length === 4 && url.split('/')[3] === '')
+            if (url.split('/')[url.split('/').length - 1] === '')
                 return '/';
             let endpoint = '';
             const match = url.match(/#(.*)$/);
@@ -399,6 +397,7 @@
                 path: '/stations/:code/',
                 callback: (code) => __awaiter(this, void 0, void 0, function* () {
                     const station = yield this.stations.reduceByCode(code);
+                    station.init();
                     yield station.renderDetails();
                 })
             }, {
@@ -421,5 +420,6 @@
     }
     const app = new App;
     app.init();
+    //# sourceMappingURL=app.js.map
 
 }());

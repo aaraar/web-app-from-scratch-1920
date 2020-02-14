@@ -1,8 +1,8 @@
 import './scss/main.scss'
+import {Page} from './Page'
 import {Home} from './pages/Home'
 import {Stations} from './Stations'
 import {Router} from './Router'
-import {Page} from './Page'
 
 class App {
     stations: Stations
@@ -20,6 +20,7 @@ class App {
                 path: '/stations/:code/',
                 callback: async (code) => {
                     const station: any = await this.stations.reduceByCode(code)
+                    station.init()
                     await station.renderDetails()
                 }
             },

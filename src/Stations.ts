@@ -1,52 +1,21 @@
-import {asyncApiCall} from './helpers'
 import {Station, CountryCode} from './pages/Station'
+import {Api} from './Api'
 
-type Response = {
-    payload?: {
-        code: string,
-        namen: {
-            lang: string
-        },
-        land: CountryCode
-    }[]
-}
+
 
 export class Stations {
     private readonly stations: Station[]
+    private api: Api
 
     constructor() {
         this.stations = []
+        this.api = new Api()
     }
 
     async getAll() {
-        return await this.getDataFromApi()
-    }
-
-    getDataFromApi = async () => {
-        return new Promise((resolve, reject) => {
-            if (localStorage.getItem('stations')) {
-                const stations = JSON.parse(localStorage.getItem('stations'))
-                stations.forEach(station => {
-                    this.stations.push(new Station(station))
-                })
-                resolve(this.stations)
-            } else {
-                asyncApiCall(
-                    'stations',
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
-                        }
-                    }).then((res: Response) => {
-                    localStorage.setItem('stations', JSON.stringify(res.payload))
-                    res.payload.forEach((station) => {
-                        this.stations.push(new Station(station))
-                    })
-                    resolve(this.stations)
-                })
-            }
-        })
+        let stations = await this.api.getStations()
+        //@ts-ignore
+        return stations.map(station => new Station(station))
     }
 
     render(listEl: HTMLElement, stations: Station[], country = 'NL') {

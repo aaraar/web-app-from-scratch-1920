@@ -1,4 +1,6 @@
-export class Page {
+import {Api} from './Api'
+
+export class Page extends Api{
     title: {
         content: string
         tag: string
@@ -9,6 +11,7 @@ export class Page {
     app: HTMLElement
 
     constructor(markup) {
+        super()
         this.app = document.getElementById('app')
         this.markup = markup
         this.loadingMarkup =
