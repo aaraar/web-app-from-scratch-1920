@@ -3,6 +3,8 @@ import {Page} from './Page'
 import {Home} from './pages/Home'
 import {Stations} from './Stations'
 import {Router} from './Router'
+import {Trips} from './pages/Trips'
+import {Trip} from './pages/Trip'
 
 class App {
     stations: Stations
@@ -19,15 +21,24 @@ class App {
             {
                 path: '/stations/:code/',
                 callback: async (code) => {
-                    const station: any = await this.stations.reduceByCode(code)
-                    station.init()
-                    await station.renderDetails()
+                    const station: any = await this.stations.reduce(code)
+                    station.init().then(station.renderDetails())
                 }
             },
             {
-                path: '/trip/from/:from/to/:to/',
-                callback: (from, to) => {
-                    alert(`trip from: ${from} to: ${to}`)
+                path: '/trips/from/:from/to/:to/',
+                callback: async (from, to) => {
+                    const fromStation = await this.stations.reduce(from)
+                    const toStation = await this.stations.reduce(to)
+                    const trips = new Trips(fromStation, toStation)
+                    trips.init().then(trips.renderDetails)
+                }
+            },
+            {
+                path: '/trip/:ctxRecon',
+                callback: async (ctxRecon) => {
+                    const trip = new Trip(decodeURIComponent(ctxRecon))
+                    trip.init().then(trip.renderDetails)
                 }
             },
             {

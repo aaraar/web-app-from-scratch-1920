@@ -9,17 +9,19 @@
 
   }
   &--item{
+    display: grid;
+    grid-template-columns: 3fr 1fr;
     padding: 0.5em;
     background-color: lighten($dark, 10%);
     border-radius: 5px;
     cursor: pointer;
     transition: transform ease-out 0.2s;
+    div {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
     &:hover {
       transform: translateY(-2px);
-    }
-    a {
-      text-decoration: none;
-      color: $light;
     }
   }
   &-form {

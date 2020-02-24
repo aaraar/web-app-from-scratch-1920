@@ -27,7 +27,18 @@ export class Stations {
         while (listEl.firstChild) listEl.removeChild(listEl.firstChild) // empties the ul
         stations.forEach(station => {
             station.render('markup', station.markup, listEl, 'beforeend', false)
+            document.getElementById(`${station.code}-from`).addEventListener('click', (e) => {
+                e.preventDefault()
+                document.getElementById('from').value = station.code
+                document.getElementById('fromLabel').innerText += ' ' + station.name
+            })
+            document.getElementById(`${station.code}-to`).addEventListener('click', (e) => {
+                e.preventDefault()
+                document.getElementById('to').value = station.code
+                document.getElementById('toLabel').innerText += ' ' + station.name
+            })
         })
+
     }
 
     filter(stations: Station[] = [], query: string = '', country: string = 'NL', limit: number = 20): Promise<Station[]> {
@@ -46,7 +57,7 @@ export class Stations {
             }
         })
     }
-    reduceByCode(code) {
+    reduce(code) {
         return new Promise((resolve, reject) => {
             this.getAll().then((stations: Station[]) => {
                 resolve(stations.reduce((acc, curr) => acc = curr.code === code ? curr : acc))

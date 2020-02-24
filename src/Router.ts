@@ -17,14 +17,14 @@ export class Router {
 
     constructor(...routes: Route[]) {
         this.routes = routes.map(route => {
-            route.path = route.path !== '' ? this.convertRouteToRegExp(route.path) : ''
+            route.path = route.path !== '' ? this.convertRoute(route.path) : ''
             return route
         })
         this.listen()
     }
 
     add(path, callback) {
-        path = this.convertRouteToRegExp(path)
+        path = this.convertRoute(path)
         this.routes.push({path, callback})
     }
 
@@ -42,7 +42,7 @@ export class Router {
         this.routes = []
     }
 
-    convertRouteToRegExp(route) {
+    convertRoute(route) {
         if (route === '/') return new RegExp(/\//)
         const match = route.match(/(.*)$/)
         let endpoint = match ? match[1] : ''

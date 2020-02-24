@@ -44,7 +44,18 @@ export class Home extends Page {
                             <option value="ALL">All</option>
                         </select>
                     </label>
-             </form>`
+             </form>
+            <form class="stations-form" method="GET">
+                <label for="name" id="fromLabel">
+                From:
+                </label>
+                    <input type="hidden" name="from" id="from" value="">
+                <label for="to" id="toLabel">
+                To:
+                </label>
+                    <input type="hidden" name="to" id="to" value="">
+                <input type="submit" id="planTrip">
+            </form>`
     }
 
     init() {
@@ -69,6 +80,10 @@ export class Home extends Page {
             const filteredStations = await this.Stations.filter(stations)
             this.Stations.render(this.stationListEl, filteredStations)
             this.addFilters()
+            document.getElementById('planTrip').addEventListener('click', (e) => {
+                e.preventDefault()
+                window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#trips/from/${document.getElementById('from').value}/to/${document.getElementById('to').value}`
+            })
         })
     }
 

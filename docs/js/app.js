@@ -26,12 +26,13 @@
     }
 
     class Api {
-        fetch(endpoint, requestObject, queries = [['']]) {
+        fetch(baseUrl, endpoint, requestObject, queries = [['']]) {
             return __awaiter(this, void 0, void 0, function* () {
                 const queryArray = queries.map(query => query.join('='));
                 const query = queryArray.join('&');
                 return new Promise((resolve, reject) => {
-                    fetch(`https://cors-anywhere.herokuapp.com/https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/${endpoint}?${query}`, requestObject).then(res => {
+                    fetch(`https://cors-anywhere.herokuapp.com/${baseUrl}${endpoint}?${query}`, requestObject)
+                        .then(res => {
                         if (res.ok)
                             resolve(res.json());
                         else
@@ -47,12 +48,13 @@
                     resolve(this.rawStations);
                 }
                 else {
-                    this.fetch('stations', {
+                    this.fetch('https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/', 'stations', {
                         method: 'GET',
                         headers: {
                             'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
                         }
-                    }).then((res) => {
+                    })
+                        .then((res) => {
                         localStorage.setItem('stations', JSON.stringify(res.payload));
                         this.rawStations = res.payload;
                         resolve(this.rawStations);
@@ -62,26 +64,53 @@
         }
         getArrivals(code) {
             return new Promise((resolve, reject) => {
-                console.log(code);
-                this.fetch('arrivals', {
+                this.fetch('https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/', 'arrivals', {
                     method: 'GET',
                     headers: {
                         'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
                     }
-                }, [['station', code]]).then(res => {
-                    console.log(res);
+                }, [['station', code]])
+                    .then((res) => {
                     resolve(res);
                 });
             });
         }
         getDepartures(code) {
             return new Promise((resolve, reject) => {
-                this.fetch('departures', {
+                this.fetch('https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/', 'departures', {
                     method: 'GET',
                     headers: {
                         'Ocp-Apim-Subscription-Key': 'e638a92ac7e74ae1a6bd7b2122b36d85'
                     }
-                }, [['station', code]]).then(res => {
+                }, [['station', code]])
+                    .then((res) => {
+                    resolve(res);
+                });
+            });
+        }
+        getTrips(from, to) {
+            return new Promise((resolve, reject) => {
+                this.fetch('https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/', 'trips', {
+                    method: 'GET',
+                    headers: {
+                        'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
+                    }
+                }, [['fromStation', from.toLowerCase()], ['toStation', to.toLowerCase()]])
+                    .then((res) => {
+                    resolve(res);
+                });
+            });
+        }
+        // https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/trips/trip?ctxRecon=arnu%7CfromStation%3D8400058%7CtoStation%3D8400285%7CplannedFromTime%3D2020-02-24T13%3A50%3A00%2B01%3A00%7CplannedArrivalTime%3D2020-02-24T14%3A05%3A00%2B01%3A00%7CyearCard%3Dfalse%7CexcludeHighSpeedTrains%3Dfalse&lang=nl&travelClass=2
+        getTrip(ctxRecon) {
+            return new Promise((resolve, reject) => {
+                this.fetch('https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/', 'trips/trip', {
+                    method: 'GET',
+                    headers: {
+                        'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
+                    }
+                }, [['ctxRecon', encodeURIComponent(ctxRecon)], ['lang', 'en'], ['travelClass', '2']])
+                    .then(res => {
                     resolve(res);
                 });
             });
@@ -153,7 +182,18 @@
                             <option value="ALL">All</option>
                         </select>
                     </label>
-             </form>`;
+             </form>
+            <form class="stations-form" method="GET">
+                <label for="name" id="fromLabel">
+                From:
+                </label>
+                    <input type="hidden" name="from" id="from" value="">
+                <label for="to" id="toLabel">
+                To:
+                </label>
+                    <input type="hidden" name="to" id="to" value="">
+                <input type="submit" id="planTrip">
+            </form>`;
         }
         init() {
             this.render('loading');
@@ -175,6 +215,10 @@
                 const filteredStations = yield this.Stations.filter(stations);
                 this.Stations.render(this.stationListEl, filteredStations);
                 this.addFilters();
+                document.getElementById('planTrip').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#trips/from/${document.getElementById('from').value}/to/${document.getElementById('to').value}`;
+                });
             }));
         }
         addFilters() {
@@ -190,7 +234,6 @@
             this.stationsCountry.addEventListener('change', filter);
         }
     }
-    //# sourceMappingURL=Home.js.map
 
     class Station extends Page {
         constructor(station) {
@@ -230,6 +273,10 @@
                     <h3>${this.name}</h3>
                     <p>${this.country}</p>
                 </a>
+                <div>
+                <button id="${this.code}-from">From</button>
+                <button id="${this.code}-to">To</button>
+                </div>
             </li>`;
         }
         init() {
@@ -241,24 +288,47 @@
         renderDetails() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.render('loading');
-                const listEl = document.createElement('ul');
+                const arrivalsEl = document.createElement('ul');
+                const departuresEl = document.createElement('ul');
+                arrivalsEl.classList.add('station--list');
+                departuresEl.classList.add('station--list');
                 const arrivals = yield this.arrivals;
                 const departures = yield this.departures;
                 //@ts-ignore
                 arrivals.payload.arrivals.forEach(arrival => {
                     const item = document.createElement('li');
                     item.innerText = arrival.origin;
-                    listEl.appendChild(item);
+                    item.classList.add('stations--item');
+                    arrivalsEl.appendChild(item);
+                });
+                departures.payload.departures.forEach(departure => {
+                    const item = document.createElement('li');
+                    const routeUl = document.createElement('ul');
+                    departure.routeStations.forEach(station => {
+                        const stop = document.createElement('li');
+                        stop.innerText = station.mediumName;
+                        routeUl.appendChild(stop);
+                    });
+                    item.classList.add('stations--item');
+                    item.innerText = departure.direction;
+                    item.appendChild(routeUl);
+                    departuresEl.appendChild(item);
                 });
                 this.markup =
                     `
             <section class="station--wrapper">
                 <h2>${this.name}</h2>
-                <h3>Arrivals</h3>
+                <div class="station--arrivals">
+                    <h3>Arrivals</h3>
+                </div>
+                <div class="station--departures">
+                    <h3>Departures</h3>
+                </div>
             </section>
            `;
                 this.render();
-                document.querySelector('.station--wrapper').appendChild(listEl);
+                document.querySelector('.station--arrivals').appendChild(arrivalsEl);
+                document.querySelector('.station--departures').appendChild(departuresEl);
             });
         }
     }
@@ -287,6 +357,16 @@
                 listEl.removeChild(listEl.firstChild); // empties the ul
             stations.forEach(station => {
                 station.render('markup', station.markup, listEl, 'beforeend', false);
+                document.getElementById(`${station.code}-from`).addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('from').value = station.code;
+                    document.getElementById('fromLabel').innerText += ' ' + station.name;
+                });
+                document.getElementById(`${station.code}-to`).addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('to').value = station.code;
+                    document.getElementById('toLabel').innerText += ' ' + station.name;
+                });
             });
         }
         filter(stations = [], query = '', country = 'NL', limit = 20) {
@@ -305,7 +385,7 @@
                 }
             });
         }
-        reduceByCode(code) {
+        reduce(code) {
             return new Promise((resolve, reject) => {
                 this.getAll().then((stations) => {
                     resolve(stations.reduce((acc, curr) => acc = curr.code === code ? curr : acc));
@@ -338,13 +418,13 @@
                 });
             };
             this.routes = routes.map(route => {
-                route.path = route.path !== '' ? this.convertRouteToRegExp(route.path) : '';
+                route.path = route.path !== '' ? this.convertRoute(route.path) : '';
                 return route;
             });
             this.listen();
         }
         add(path, callback) {
-            path = this.convertRouteToRegExp(path);
+            path = this.convertRoute(path);
             this.routes.push({ path, callback });
         }
         remove(path) {
@@ -359,7 +439,7 @@
         flush() {
             this.routes = [];
         }
-        convertRouteToRegExp(route) {
+        convertRoute(route) {
             if (route === '/')
                 return new RegExp(/\//);
             const match = route.match(/(.*)$/);
@@ -387,6 +467,85 @@
     }
     //# sourceMappingURL=Router.js.map
 
+    class Trips extends Page {
+        constructor(from, to) {
+            super(``);
+            this.renderDetails = () => __awaiter(this, void 0, void 0, function* () {
+                this.render('loading');
+                const tripsEl = document.createElement('ul');
+                tripsEl.classList.add('trips--list');
+                const trips = yield this.trips;
+                // @ts-ignore
+                trips.trips.forEach(trip => {
+                    const item = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = `/#trip/${encodeURIComponent(trip.ctxRecon)}`;
+                    link.classList.add('trips--item');
+                    const title = document.createElement('h3');
+                    const departureTime = document.createElement('p');
+                    const via = document.createElement('p');
+                    const stops = trip.legs[0].stops.map(trip => trip.name);
+                    stops.join(', ');
+                    via.innerText = `Via ${stops.slice(0, stops.length - 1).join(', ')} & ${stops.slice(stops.length - 1)}`;
+                    title.innerText = trip.legs[0].direction;
+                    departureTime.innerText = new Date(trip.legs[0].origin.plannedDateTime).toLocaleString();
+                    link.append(title, departureTime, via);
+                    item.appendChild(link);
+                    tripsEl.appendChild(item);
+                });
+                this.markup =
+                    `
+            <section class="trips--wrapper">
+                <h2>Trips from ${this.from.name} to ${this.to.name}</h2>
+                <div class="trips"></div>
+            </section>
+           `;
+                this.render();
+                document.querySelector('.trips').appendChild(tripsEl);
+            });
+            this.from = from;
+            this.to = to;
+        }
+        init() {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield this.from;
+                yield this.to;
+                this.trips = this.getTrips(this.from.code, this.to.code);
+            });
+        }
+    }
+    //# sourceMappingURL=Trips.js.map
+
+    class Trip extends Page {
+        constructor(ctxRecon) {
+            super('');
+            this.renderDetails = () => __awaiter(this, void 0, void 0, function* () {
+                this.render('loading');
+                const trip = yield this.trip;
+                const legs = trip.legs.map(leg => `<div class="trip--leg">
+                <h3>${leg.origin.name} - Departure ${new Date(leg.origin.actualDateTime).toLocaleTimeString().slice(0, 5)}</h3>
+                ${leg.stops.map((stop, index) => index === 0 || index === leg.stops.length - 1 ?
+                '' :
+                `<p>${stop.name} - ${new Date(stop.plannedArrivalDateTime).toLocaleTimeString().slice(0, 5)}</p>`).join('')}
+                <h3>${leg.destination.name} - Arrival: ${new Date(leg.destination.actualDateTime).toLocaleTimeString().slice(0, 5)}</h3>
+            </div>`);
+                this.markup =
+                    `
+            <h2>Trip from ${trip.legs[0].origin.name} to ${trip.legs[0].destination.name}</h2> 
+            ${legs.join(' Transfer ')}
+        `;
+                this.render();
+            });
+            this.ctxRecon = ctxRecon;
+        }
+        init() {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.trip = this.getTrip(this.ctxRecon);
+            });
+        }
+    }
+    //# sourceMappingURL=Trip.js.map
+
     class App {
         constructor() {
             this.stations = new Stations();
@@ -396,15 +555,23 @@
             this.router = new Router({
                 path: '/stations/:code/',
                 callback: (code) => __awaiter(this, void 0, void 0, function* () {
-                    const station = yield this.stations.reduceByCode(code);
-                    station.init();
-                    yield station.renderDetails();
+                    const station = yield this.stations.reduce(code);
+                    station.init().then(station.renderDetails());
                 })
             }, {
-                path: '/trip/from/:from/to/:to/',
-                callback: (from, to) => {
-                    alert(`trip from: ${from} to: ${to}`);
-                }
+                path: '/trips/from/:from/to/:to/',
+                callback: (from, to) => __awaiter(this, void 0, void 0, function* () {
+                    const fromStation = yield this.stations.reduce(from);
+                    const toStation = yield this.stations.reduce(to);
+                    const trips = new Trips(fromStation, toStation);
+                    trips.init().then(trips.renderDetails);
+                })
+            }, {
+                path: '/trip/:ctxRecon',
+                callback: (ctxRecon) => __awaiter(this, void 0, void 0, function* () {
+                    const trip = new Trip(decodeURIComponent(ctxRecon));
+                    trip.init().then(trip.renderDetails);
+                })
             }, {
                 path: '/',
                 callback: () => __awaiter(this, void 0, void 0, function* () {

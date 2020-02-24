@@ -46,7 +46,8 @@ img {
 
 a,
 a:visited {
-  color: $primary;
+    text-decoration: none;
+    color: $light;
 }
 
 footer {
