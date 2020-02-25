@@ -43,10 +43,8 @@
         }
         getStations() {
             return new Promise((resolve, reject) => {
-                if (localStorage.getItem('stations')) {
-                    this.rawStations = JSON.parse(localStorage.getItem('stations'));
-                    resolve(this.rawStations);
-                }
+                if (localStorage.getItem('stations'))
+                    resolve(JSON.parse(localStorage.getItem('stations')));
                 else {
                     this.fetch('https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/', 'stations', {
                         method: 'GET',
@@ -97,22 +95,29 @@
                     }
                 }, [['fromStation', from.toLowerCase()], ['toStation', to.toLowerCase()]])
                     .then((res) => {
+                    res.trips.forEach(trip => {
+                        if (!localStorage.getItem(trip.ctxRecon))
+                            localStorage.setItem(trip.ctxRecon, JSON.stringify(trip));
+                    });
                     resolve(res);
                 });
             });
         }
-        // https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/trips/trip?ctxRecon=arnu%7CfromStation%3D8400058%7CtoStation%3D8400285%7CplannedFromTime%3D2020-02-24T13%3A50%3A00%2B01%3A00%7CplannedArrivalTime%3D2020-02-24T14%3A05%3A00%2B01%3A00%7CyearCard%3Dfalse%7CexcludeHighSpeedTrains%3Dfalse&lang=nl&travelClass=2
         getTrip(ctxRecon) {
             return new Promise((resolve, reject) => {
-                this.fetch('https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/', 'trips/trip', {
-                    method: 'GET',
-                    headers: {
-                        'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
-                    }
-                }, [['ctxRecon', encodeURIComponent(ctxRecon)], ['lang', 'en'], ['travelClass', '2']])
-                    .then(res => {
-                    resolve(res);
-                });
+                if (localStorage.getItem(ctxRecon))
+                    resolve(JSON.parse(localStorage.getItem(ctxRecon)));
+                else {
+                    this.fetch('https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/', 'trips/trip', {
+                        method: 'GET',
+                        headers: {
+                            'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
+                        }
+                    }, [['ctxRecon', encodeURIComponent(ctxRecon)], ['lang', 'en'], ['travelClass', '2']])
+                        .then((res) => {
+                        resolve(res);
+                    });
+                }
             });
         }
     }
@@ -465,6 +470,7 @@
             window.addEventListener('hashchange', this.checkRoute);
         }
     }
+    //# sourceMappingURL=Router.js.map
 
     class Trips extends Page {
         constructor(from, to) {
@@ -481,14 +487,24 @@
                     link.href = `/#trip/${encodeURIComponent(trip.ctxRecon)}`;
                     link.classList.add('trips--item');
                     const title = document.createElement('h3');
-                    const departureTime = document.createElement('p');
+                    const time = document.createElement('p');
                     const via = document.createElement('p');
-                    const stops = trip.legs[0].stops.map(trip => trip.name);
+                    const stops = trip.legs.length > 1
+                        ? trip.legs.map(leg => leg.destination.name)
+                        : trip.legs[0].stops.filter(stop => stop.plannedArrivalDateTime || stop.actualArrivalDateTime)
+                            .map(stop => stop.name);
                     stops.join(', ');
                     via.innerText = `Via ${stops.slice(0, stops.length - 1).join(', ')} & ${stops.slice(stops.length - 1)}`;
+                    console.log(trip);
                     title.innerText = trip.legs[0].direction;
-                    departureTime.innerText = new Date(trip.legs[0].origin.plannedDateTime).toLocaleString();
-                    link.append(title, departureTime, via);
+                    const departureTime = trip.legs[0].origin.actualDateTime
+                        ? new Date(trip.legs[0].origin.actualDateTime).toLocaleTimeString().slice(0, 5)
+                        : new Date(trip.legs[0].origin.plannedDateTime).toLocaleTimeString().slice(0, 5);
+                    const arrivalTime = trip.legs[trip.legs.length - 1].destination.actualDateTime
+                        ? new Date(trip.legs[trip.legs.length - 1].destination.actualDateTime).toLocaleTimeString().slice(0, 5)
+                        : new Date(trip.legs[trip.legs.length - 1].destination.plannedDateTime).toLocaleTimeString().slice(0, 5);
+                    time.innerText = `${departureTime} - ${arrivalTime}`;
+                    link.append(title, time, via);
                     item.appendChild(link);
                     tripsEl.appendChild(item);
                 });
@@ -513,34 +529,50 @@
             });
         }
     }
-    //# sourceMappingURL=Trips.js.map
 
     class Trip extends Page {
         constructor(ctxRecon) {
             super('');
             this.renderDetails = () => __awaiter(this, void 0, void 0, function* () {
                 this.render('loading');
-                const trip = yield this.trip;
-                const legs = trip.legs.map(leg => `<div class="trip--leg">
-                <h3>${leg.origin.name} - Departure ${new Date(leg.origin.actualDateTime).toLocaleTimeString().slice(0, 5)}</h3>
-                ${leg.stops.map((stop, index) => index === 0 || index === leg.stops.length - 1 ?
-                '' :
-                `<p>${stop.name} - ${new Date(stop.plannedArrivalDateTime).toLocaleTimeString().slice(0, 5)}</p>`).join('')}
-                <h3>${leg.destination.name} - Arrival: ${new Date(leg.destination.actualDateTime).toLocaleTimeString().slice(0, 5)}</h3>
-            </div>`);
-                this.markup =
-                    `
-            <h2>Trip from ${trip.legs[0].origin.name} to ${trip.legs[0].destination.name}</h2> 
-            ${legs.join(' Transfer ')}
-        `;
+                this.parseMarkup(yield this.trip);
                 this.render();
             });
             this.ctxRecon = ctxRecon;
         }
         init() {
             return __awaiter(this, void 0, void 0, function* () {
+                // @ts-ignore
                 this.trip = this.getTrip(this.ctxRecon);
             });
+        }
+        parseMarkup(trip) {
+            const legs = trip.legs.map(leg => {
+                const originDateTime = leg.origin.actualDateTime
+                    ? new Date(leg.origin.actualDateTime).toLocaleTimeString().slice(0, 5)
+                    : new Date(leg.origin.plannedDateTime).toLocaleTimeString().slice(0, 5);
+                const destinationArrival = leg.destination.actualDateTime
+                    ? new Date(leg.destination.actualDateTime).toLocaleTimeString().slice(0, 5)
+                    : new Date(leg.destination.plannedDateTime).toLocaleTimeString().slice(0, 5);
+                const stops = leg.stops.slice(1, leg.stops.length);
+                const stopMarkup = stops.filter(stop => stop.plannedArrivalDateTime || stop.actualArrivalDateTime)
+                    .map((stop) => {
+                    const arrivalDateTime = stop.actualArrivalDateTime
+                        ? new Date(stop.actualArrivalDateTime).toLocaleTimeString().slice(0, 5)
+                        : new Date(stop.plannedArrivalDateTime).toLocaleTimeString().slice(0, 5);
+                    return `<p>${stop.name} - ${arrivalDateTime}</p>`;
+                });
+                return `<div class="trip--leg">
+                <h3>${leg.origin.name} - Departure ${originDateTime}</h3>
+               ${stopMarkup.join('')}
+                <h3>${leg.destination.name} - Arrival: ${destinationArrival}</h3>
+            </div>`;
+            });
+            this.markup =
+                `
+            <h2>Trip from ${trip.legs[0].origin.name} to ${trip.legs[trip.legs.length - 1].destination.name}</h2> 
+            ${legs.join(' Transfer ')}
+            `;
         }
     }
     //# sourceMappingURL=Trip.js.map

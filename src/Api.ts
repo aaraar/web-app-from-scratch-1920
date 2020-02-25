@@ -1,4 +1,5 @@
 import {CountryCode} from './pages/Station'
+import {Trip} from './pages/Trip'
 
 type Response = {
     payload?: {
@@ -59,10 +60,8 @@ export class Api {
 
     getStations() {
         return new Promise((resolve, reject) => {
-            if (localStorage.getItem('stations')) {
-                this.rawStations = JSON.parse(localStorage.getItem('stations'))
-                resolve(this.rawStations)
-            } else {
+            if (localStorage.getItem('stations')) resolve(JSON.parse(localStorage.getItem('stations')))
+            else {
                 this.fetch(
                     'https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/',
                     'stations',
@@ -123,26 +122,31 @@ export class Api {
                         'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
                     }
                 }, [['fromStation', from.toLowerCase()], ['toStation', to.toLowerCase()]])
-                .then((res) => {
+                .then((res: {trips: Trip[]}) => {
+                    res.trips.forEach( trip => {
+                        if (!localStorage.getItem(trip.ctxRecon)) localStorage.setItem(trip.ctxRecon, JSON.stringify(trip))
+                    })
                 resolve(res)
             })
         })
     }
 
-    // https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/trips/trip?ctxRecon=arnu%7CfromStation%3D8400058%7CtoStation%3D8400285%7CplannedFromTime%3D2020-02-24T13%3A50%3A00%2B01%3A00%7CplannedArrivalTime%3D2020-02-24T14%3A05%3A00%2B01%3A00%7CyearCard%3Dfalse%7CexcludeHighSpeedTrains%3Dfalse&lang=nl&travelClass=2
     getTrip(ctxRecon) {
         return new Promise((resolve, reject) => {
-            this.fetch(
-                'https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/',
-                'trips/trip', {
-                    method: 'GET',
-                    headers: {
-                        'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
-                    }
-                }, [['ctxRecon', encodeURIComponent(ctxRecon)], ['lang', 'en'], ['travelClass', '2']])
-                .then(res => {
-                resolve(res)
-            })
+            if (localStorage.getItem(ctxRecon)) resolve(JSON.parse(localStorage.getItem(ctxRecon)))
+            else {
+                this.fetch(
+                    'https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/',
+                    'trips/trip', {
+                        method: 'GET',
+                        headers: {
+                            'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
+                        }
+                    }, [['ctxRecon', encodeURIComponent(ctxRecon)], ['lang', 'en'], ['travelClass', '2']])
+                    .then((res: Trip) => {
+                        resolve(res)
+                    })
+            }
         })
     }
 }

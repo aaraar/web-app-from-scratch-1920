@@ -30,14 +30,24 @@ export class Trips extends Page {
             link.href = `/#trip/${encodeURIComponent(trip.ctxRecon)}`
             link.classList.add('trips--item')
             const title = document.createElement('h3')
-            const departureTime = document.createElement('p')
+            const time = document.createElement('p')
             const via = document.createElement('p')
-            const stops = trip.legs[0].stops.map(trip => trip.name)
+            const stops = trip.legs.length > 1
+                ? trip.legs.map(leg => leg.destination.name)
+                : trip.legs[0].stops.filter(stop => stop.plannedArrivalDateTime || stop.actualArrivalDateTime)
+                                    .map(stop => stop.name)
             stops.join(', ')
             via.innerText = `Via ${stops.slice(0, stops.length - 1).join(', ')} & ${stops.slice(stops.length - 1)}`
+            console.log(trip)
             title.innerText = trip.legs[0].direction
-            departureTime.innerText = new Date(trip.legs[0].origin.plannedDateTime).toLocaleString()
-            link.append(title, departureTime, via)
+            const departureTime = trip.legs[0].origin.actualDateTime
+                ? new Date(trip.legs[0].origin.actualDateTime).toLocaleTimeString().slice(0, 5)
+                : new Date(trip.legs[0].origin.plannedDateTime).toLocaleTimeString().slice(0, 5)
+            const arrivalTime = trip.legs[trip.legs.length -1].destination.actualDateTime
+                ? new Date(trip.legs[trip.legs.length -1].destination.actualDateTime).toLocaleTimeString().slice(0, 5)
+                : new Date(trip.legs[trip.legs.length -1].destination.plannedDateTime).toLocaleTimeString().slice(0, 5)
+            time.innerText = `${departureTime} - ${arrivalTime}`
+            link.append(title, time, via)
             item.appendChild(link)
             tripsEl.appendChild(item)
         })
