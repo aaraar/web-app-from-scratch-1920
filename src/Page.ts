@@ -1,6 +1,6 @@
 import {Api} from './Api'
 
-export class Page extends Api{
+export class Page extends Api {
     title: {
         content: string
         tag: string

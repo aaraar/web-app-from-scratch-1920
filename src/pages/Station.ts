@@ -5,11 +5,11 @@ export type CountryCode = 'ERROR' | 'NL' | 'D' | 'B' | 'F' | 'GB' | 'A' | 'CH'
 
 export class Station extends Page {
     code: string
+    readonly name: string
+    countryCode: CountryCode
     private arrivals: Promise<ArrivalsResponse> | ArrivalsResponse
     private departures: Promise<DeparturesResponse>
-    readonly name: string
     private readonly country: any
-    countryCode: CountryCode
 
     constructor(station: { code: string, namen: { lang: string }, land: CountryCode }) {
         super('')
@@ -42,7 +42,7 @@ export class Station extends Page {
                 this.country = 'Switzerland'
                 break
         }
-        const buttons = station.land !== "ERROR"
+        const buttons = station.land !== 'ERROR'
             ? `<button id="${this.code}-from">From</button>
                <button id="${this.code}-to">To</button>`
             : ''

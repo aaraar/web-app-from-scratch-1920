@@ -1,6 +1,5 @@
-import {Station, CountryCode} from './pages/Station'
+import {Station} from './pages/Station'
 import {Api} from './Api'
-
 
 
 export class Stations {
@@ -57,6 +56,7 @@ export class Stations {
             }
         })
     }
+
     reduce(code) {
         return new Promise((resolve, reject) => {
             this.getAll().then((stations: Station[]) => {

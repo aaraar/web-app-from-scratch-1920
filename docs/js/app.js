@@ -222,6 +222,7 @@
                 this.addFilters();
                 document.getElementById('planTrip').addEventListener('click', (e) => {
                     e.preventDefault();
+                    //@ts-ignore
                     window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#trips/from/${document.getElementById('from').value}/to/${document.getElementById('to').value}`;
                 });
             }));
@@ -273,7 +274,7 @@
                     this.country = 'Switzerland';
                     break;
             }
-            const buttons = station.land !== "ERROR"
+            const buttons = station.land !== 'ERROR'
                 ? `<button id="${this.code}-from">From</button>
                <button id="${this.code}-to">To</button>`
                 : '';
@@ -341,6 +342,7 @@
             });
         }
     }
+    //# sourceMappingURL=Station.js.map
 
     class Stations {
         constructor() {
@@ -477,7 +479,7 @@
     class Trips extends Page {
         constructor(from, to) {
             super(``);
-            this.renderDetails = () => __awaiter(this, void 0, void 0, function* () {
+            this.renderList = () => __awaiter(this, void 0, void 0, function* () {
                 this.render('loading');
                 const tripsEl = document.createElement('ul');
                 tripsEl.classList.add('trips--list');
@@ -497,7 +499,6 @@
                             .map(stop => stop.name);
                     stops.join(', ');
                     via.innerText = `Via ${stops.slice(0, stops.length - 1).join(', ')} & ${stops.slice(stops.length - 1)}`;
-                    console.log(trip);
                     title.innerText = trip.legs.length > 1 ? `${trip.legs.length} trains` : trip.legs[0].direction;
                     const departureTime = trip.legs[0].origin.actualDateTime
                         ? new Date(trip.legs[0].origin.actualDateTime).toLocaleTimeString().slice(0, 5)
@@ -531,14 +532,13 @@
             });
         }
     }
-    //# sourceMappingURL=Trips.js.map
 
     class Trip extends Page {
         constructor(ctxRecon) {
             super('');
             this.renderDetails = () => __awaiter(this, void 0, void 0, function* () {
                 this.render('loading');
-                this.parseMarkup(yield this.trip);
+                this.parseMarkup();
                 this.render();
             });
             this.ctxRecon = ctxRecon;
@@ -546,11 +546,12 @@
         init() {
             return __awaiter(this, void 0, void 0, function* () {
                 // @ts-ignore
-                this.trip = this.getTrip(this.ctxRecon);
+                const trip = yield this.getTrip(this.ctxRecon);
+                this.legs = trip.legs;
             });
         }
-        parseMarkup(trip) {
-            const legs = trip.legs.map(leg => {
+        parseMarkup() {
+            const legs = this.legs.map(leg => {
                 const originDateTime = leg.origin.actualDateTime
                     ? new Date(leg.origin.actualDateTime).toLocaleTimeString().slice(0, 5)
                     : new Date(leg.origin.plannedDateTime).toLocaleTimeString().slice(0, 5);
@@ -573,7 +574,7 @@
             });
             this.markup =
                 `
-            <h2>Trip from ${trip.legs[0].origin.name} to ${trip.legs[trip.legs.length - 1].destination.name}</h2> 
+            <h2>Trip from ${this.legs[0].origin.name} to ${this.legs[this.legs.length - 1].destination.name}</h2> 
             ${legs.join('<p class="transfer">Transfer</p>')}
             `;
         }
@@ -598,7 +599,7 @@
                     const fromStation = yield this.stations.reduce(from);
                     const toStation = yield this.stations.reduce(to);
                     const trips = new Trips(fromStation, toStation);
-                    trips.init().then(trips.renderDetails);
+                    trips.init().then(trips.renderList);
                 })
             }, {
                 path: '/trip/:ctxRecon',

@@ -52,9 +52,9 @@ export class Api {
         return new Promise((resolve, reject) => {
             fetch(`https://cors-anywhere.herokuapp.com/${baseUrl}${endpoint}?${query}`, requestObject)
                 .then(res => {
-                if (res.ok) resolve(res.json())
-                else reject(res)
-            })
+                    if (res.ok) resolve(res.json())
+                    else reject(res)
+                })
         })
     }
 
@@ -72,10 +72,10 @@ export class Api {
                         }
                     })
                     .then((res: Response) => {
-                    localStorage.setItem('stations', JSON.stringify(res.payload))
-                    this.rawStations = res.payload
-                    resolve(this.rawStations)
-                })
+                        localStorage.setItem('stations', JSON.stringify(res.payload))
+                        this.rawStations = res.payload
+                        resolve(this.rawStations)
+                    })
             }
         })
     }
@@ -91,8 +91,8 @@ export class Api {
                     }
                 }, [['station', code]])
                 .then((res: ArrivalsResponse) => {
-                resolve(res)
-            })
+                    resolve(res)
+                })
         })
     }
 
@@ -107,8 +107,8 @@ export class Api {
                     }
                 }, [['station', code]])
                 .then((res: DeparturesResponse) => {
-                resolve(res)
-            })
+                    resolve(res)
+                })
         })
     }
 
@@ -122,12 +122,12 @@ export class Api {
                         'Ocp-Apim-Subscription-Key': 'd73085e5fa2641af8bd36c1c75b12387'
                     }
                 }, [['fromStation', from.toLowerCase()], ['toStation', to.toLowerCase()]])
-                .then((res: {trips: Trip[]}) => {
-                    res.trips.forEach( trip => {
+                .then((res: { trips: Trip[] }) => {
+                    res.trips.forEach(trip => {
                         if (!localStorage.getItem(trip.ctxRecon)) localStorage.setItem(trip.ctxRecon, JSON.stringify(trip))
                     })
-                resolve(res)
-            })
+                    resolve(res)
+                })
         })
     }
 

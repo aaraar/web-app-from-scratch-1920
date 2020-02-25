@@ -18,7 +18,7 @@ export class Trips extends Page {
         this.trips = this.getTrips(this.from.code, this.to.code)
     }
 
-    renderDetails = async () => {
+    renderList = async () => {
         this.render('loading')
         const tripsEl = document.createElement('ul')
         tripsEl.classList.add('trips--list')
@@ -38,7 +38,6 @@ export class Trips extends Page {
                                     .map(stop => stop.name)
             stops.join(', ')
             via.innerText = `Via ${stops.slice(0, stops.length - 1).join(', ')} & ${stops.slice(stops.length - 1)}`
-            console.log(trip)
             title.innerText = trip.legs.length > 1 ? `${trip.legs.length} trains` : trip.legs[0].direction
             const departureTime = trip.legs[0].origin.actualDateTime
                 ? new Date(trip.legs[0].origin.actualDateTime).toLocaleTimeString().slice(0, 5)

@@ -10,8 +10,8 @@ export class Home extends Page {
     private stations: Station[]
     private readonly filterMarkup: string
     private limit: number
-    private stationsLimitSelect: HTMLElement & {value: number}
-    private stationsCountry: HTMLElement & {value: string}
+    private stationsLimitSelect: HTMLElement & { value: number }
+    private stationsCountry: HTMLElement & { value: string }
 
     constructor(Stations) {
         super('')
@@ -63,8 +63,8 @@ export class Home extends Page {
     }
 
     renderStations() {
-        this.Stations.getAll().then( async (stations: Station[]) => {
-            this.stations = stations;
+        this.Stations.getAll().then(async (stations: Station[]) => {
+            this.stations = stations
             this.render('markup',
                 `<section class="stations--wrapper">
                 <h2>NS stations in Nederland</h2>
@@ -76,12 +76,13 @@ export class Home extends Page {
             document.querySelector('h2').insertAdjacentHTML('afterend', this.filterMarkup)
             this.stationsSearchField = document.querySelector('#stations-search-field')
             this.stationsLimitSelect = document.querySelector('#stations-search-limit')
-            this.stationsCountry =  document.querySelector('#stations-search-country')
+            this.stationsCountry = document.querySelector('#stations-search-country')
             const filteredStations = await this.Stations.filter(stations)
             this.Stations.render(this.stationListEl, filteredStations)
             this.addFilters()
             document.getElementById('planTrip').addEventListener('click', (e) => {
                 e.preventDefault()
+                //@ts-ignore
                 window.location.href = `${window.location.href.replace(/#(.*)$/, '')}#trips/from/${document.getElementById('from').value}/to/${document.getElementById('to').value}`
             })
         })

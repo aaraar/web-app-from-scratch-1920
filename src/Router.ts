@@ -4,8 +4,6 @@
  * Check sourcecode at https://github.com/javascript-by-doing/create-a-modern-javascript-router
  */
 
-import Timeout = NodeJS.Timeout
-
 export interface Route {
     path: RegExp | string
     callback: any

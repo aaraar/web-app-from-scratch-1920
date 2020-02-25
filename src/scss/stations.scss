@@ -8,7 +8,8 @@
     grid-row-gap: 0.5em;
 
   }
-  &--item{
+
+  &--item {
     display: grid;
     grid-template-columns: 3fr 1fr;
     padding: 0.5em;
@@ -16,14 +17,17 @@
     border-radius: 5px;
     cursor: pointer;
     transition: transform ease-out 0.2s;
+
     div {
       display: flex;
       flex-direction: column;
       justify-content: space-around;
     }
+
     &:hover {
       transform: translateY(-2px);
     }
+
     button {
       //border-radius: 10px;
       height: 45%;
@@ -34,17 +38,21 @@
       cursor: grab;
     }
   }
+
   &-form {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     align-items: center;
     max-width: 800px;
+
     input[type="submit"] {
       max-width: 150px;
       padding: 0.2em 0.5em;
     }
-    label{
+
+    label {
       margin: 0.5em;
+
       input, select {
         margin-left: 0.5em;
       }

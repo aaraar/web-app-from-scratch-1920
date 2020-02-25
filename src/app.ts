@@ -31,7 +31,7 @@ class App {
                     const fromStation = await this.stations.reduce(from)
                     const toStation = await this.stations.reduce(to)
                     const trips = new Trips(fromStation, toStation)
-                    trips.init().then(trips.renderDetails)
+                    trips.init().then(trips.renderList)
                 }
             },
             {

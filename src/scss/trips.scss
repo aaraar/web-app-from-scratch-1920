@@ -14,9 +14,11 @@
       border-radius: 5px;
       cursor: pointer;
       transition: transform ease-out 0.2s;
+
       &:hover {
         transform: translateY(-2px);
       }
+
       a {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -49,13 +51,15 @@
   }
 }
 
-.trip{
-  &--leg{
+.trip {
+  &--leg {
     position: relative;
     box-sizing: border-box;
+
     p {
       position: relative;
       margin-left: 0.8em;
+
       &::after {
         transform: translateY(-50%);
         content: '';
@@ -67,9 +71,11 @@
         background-color: $secondary;
       }
     }
+
     h3 {
       background-color: $dark;
     }
+
     &::after {
       z-index: -1;
       content: '';
@@ -84,7 +90,7 @@
 
 .transfer {
   background-color: $primary;
-  color:$secondary;
+  color: $secondary;
   max-width: 500px;
   padding: 0.2em 0.5em;
 }
