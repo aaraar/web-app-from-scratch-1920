@@ -121,7 +121,6 @@
             });
         }
     }
-    //# sourceMappingURL=Api.js.map
 
     class Page extends Api {
         constructor(markup) {
@@ -153,7 +152,6 @@
             }
         }
     }
-    //# sourceMappingURL=Page.js.map
 
     class Home extends Page {
         constructor(Stations) {
@@ -239,7 +237,6 @@
             this.stationsCountry.addEventListener('change', filter);
         }
     }
-    //# sourceMappingURL=Home.js.map
 
     class Station extends Page {
         constructor(station) {
@@ -338,7 +335,6 @@
             });
         }
     }
-    //# sourceMappingURL=Station.js.map
 
     class Stations {
         constructor() {
@@ -399,7 +395,6 @@
             });
         }
     }
-    //# sourceMappingURL=Stations.js.map
 
     /*
      * Created with https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d
@@ -470,7 +465,6 @@
             window.addEventListener('hashchange', this.checkRoute);
         }
     }
-    //# sourceMappingURL=Router.js.map
 
     class Trips extends Page {
         constructor(from, to) {
@@ -496,7 +490,7 @@
                     stops.join(', ');
                     via.innerText = `Via ${stops.slice(0, stops.length - 1).join(', ')} & ${stops.slice(stops.length - 1)}`;
                     console.log(trip);
-                    title.innerText = trip.legs[0].direction;
+                    title.innerText = trip.legs.length > 1 ? `${trip.legs.length} trains` : trip.legs[0].direction;
                     const departureTime = trip.legs[0].origin.actualDateTime
                         ? new Date(trip.legs[0].origin.actualDateTime).toLocaleTimeString().slice(0, 5)
                         : new Date(trip.legs[0].origin.plannedDateTime).toLocaleTimeString().slice(0, 5);
@@ -571,11 +565,10 @@
             this.markup =
                 `
             <h2>Trip from ${trip.legs[0].origin.name} to ${trip.legs[trip.legs.length - 1].destination.name}</h2> 
-            ${legs.join(' Transfer ')}
+            ${legs.join('<p class="transfer">Transfer</p>')}
             `;
         }
     }
-    //# sourceMappingURL=Trip.js.map
 
     class App {
         constructor() {
@@ -618,6 +611,5 @@
     }
     const app = new App;
     app.init();
-    //# sourceMappingURL=app.js.map
 
 }());

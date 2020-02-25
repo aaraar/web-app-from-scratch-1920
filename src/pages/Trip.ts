@@ -44,7 +44,7 @@ export class Trip extends Page {
         this.markup =
             `
             <h2>Trip from ${trip.legs[0].origin.name} to ${trip.legs[trip.legs.length - 1].destination.name}</h2> 
-            ${legs.join(' Transfer ')}
+            ${legs.join('<p class="transfer">Transfer</p>')}
             `
     }
 

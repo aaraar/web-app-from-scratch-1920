@@ -73,11 +73,12 @@ footer {
   .stations--item:hover {
     transform: translateY(-2px); }
   .stations--item button {
-    border-radius: 10px;
     height: 45%;
     max-height: 150px;
-    background-color: #fff;
-    opacity: 0.5; }
+    background-color: #f7d417;
+    color: #003373;
+    border: none;
+    cursor: grab; }
 
 .stations-form {
   display: grid;
@@ -130,6 +131,8 @@ footer {
     border-radius: 5px;
     cursor: pointer;
     transition: transform ease-out 0.2s; }
+    .trips--list li:hover {
+      transform: translateY(-2px); }
     .trips--list li a {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -150,8 +153,6 @@ footer {
         grid-column-start: 1;
         grid-column-end: 3;
         font-size: 0.8em; }
-      .trips--list li a:hover {
-        transform: translateY(-2px); }
 
 .trip--leg {
   position: relative;
@@ -178,3 +179,9 @@ footer {
     width: 0.3em;
     background-color: #003373;
     top: 0; }
+
+.transfer {
+  background-color: #f7d417;
+  color: #003373;
+  max-width: 500px;
+  padding: 0.2em 0.5em; }
