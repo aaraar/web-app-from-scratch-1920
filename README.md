@@ -29,8 +29,8 @@
 - Open terminal and navigate to the folder
 - run `yarn` or `npm install` depending on your package manager prefference
 - run `yarn dev` or `npm run dev`
-- Open your browser and navigate to ![http://localhost:10001](http://localhost:10001)
-#### Or simply go to the github.io page of this repo at ![https://aaraar.github.io/web-apps-from-scratch-1920](https://aaraar.github.io/web-apps-from-scratch-1920)
+- Open your browser and navigate to [http://localhost:10001](http://localhost:10001)
+#### Or simply go to the github.io page of this repo at [https://aaraar.github.io/web-apps-from-scratch-1920](https://aaraar.github.io/web-apps-from-scratch-1920)
 ## App goal
 The goal of the app is to simplify the flow of finding the right train trip.
 A feature that NS (Dutch railway company) provides in their API is to show the crowdedness of each wagon.
@@ -65,7 +65,7 @@ I have learnt much about type declarations and workings of Typescript by using i
 and other unknown data types are handled. You can see the type declaration make an appearance in the actor diagram to make it
 a lot more readable in my opinion
 ### (Hash)router
-This component of the project, relies heavily on a tutorial from ![Medium](https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d)
+This component of the project, relies heavily on a tutorial from [Medium](https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d)
 I converted it to typescript by declaring all the types and abstracted the Regular expressions a bit so that it accepts express-style paths (express.js).
 Therefore I did not completely make this myself, I do however know how and why it works and have made some improvements to it.
 It mostly taught me a lot on how to use regular expressions
