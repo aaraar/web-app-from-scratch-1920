@@ -50,7 +50,7 @@ export class Api {
         const queryArray: string[] = queries.map(query => query.join('='))
         const query: string = queryArray.join('&')
         return new Promise((resolve, reject) => {
-            fetch(`https://cors-anywhere.herokuapp.com/${baseUrl}${endpoint}?${query}`, requestObject)
+            fetch(`${baseUrl}${endpoint}?${query}`, requestObject)
                 .then(res => {
                     if (res.ok) resolve(res.json())
                     else reject(res)

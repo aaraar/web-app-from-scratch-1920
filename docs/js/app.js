@@ -31,7 +31,7 @@
                 const queryArray = queries.map(query => query.join('='));
                 const query = queryArray.join('&');
                 return new Promise((resolve, reject) => {
-                    fetch(`https://cors-anywhere.herokuapp.com/${baseUrl}${endpoint}?${query}`, requestObject)
+                    fetch(`${baseUrl}${endpoint}?${query}`, requestObject)
                         .then(res => {
                         if (res.ok)
                             resolve(res.json());
@@ -121,7 +121,6 @@
             });
         }
     }
-    //# sourceMappingURL=Api.js.map
 
     class Page extends Api {
         constructor(markup) {
@@ -532,6 +531,7 @@
             });
         }
     }
+    //# sourceMappingURL=Trips.js.map
 
     class Trip extends Page {
         constructor(ctxRecon) {
