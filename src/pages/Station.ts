@@ -42,6 +42,10 @@ export class Station extends Page {
                 this.country = 'Switzerland'
                 break
         }
+        const buttons = station.land !== "ERROR"
+            ? `<button id="${this.code}-from">From</button>
+               <button id="${this.code}-to">To</button>`
+            : ''
         this.markup =
             `<li class="stations--item">
                 <a href="/#stations/${this.code}">
@@ -49,8 +53,7 @@ export class Station extends Page {
                     <p>${this.country}</p>
                 </a>
                 <div>
-                <button id="${this.code}-from">From</button>
-                <button id="${this.code}-to">To</button>
+                ${buttons}
                 </div>
             </li>`
     }

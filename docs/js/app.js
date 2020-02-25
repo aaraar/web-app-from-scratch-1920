@@ -121,6 +121,7 @@
             });
         }
     }
+    //# sourceMappingURL=Api.js.map
 
     class Page extends Api {
         constructor(markup) {
@@ -152,6 +153,7 @@
             }
         }
     }
+    //# sourceMappingURL=Page.js.map
 
     class Home extends Page {
         constructor(Stations) {
@@ -237,6 +239,7 @@
             this.stationsCountry.addEventListener('change', filter);
         }
     }
+    //# sourceMappingURL=Home.js.map
 
     class Station extends Page {
         constructor(station) {
@@ -270,6 +273,10 @@
                     this.country = 'Switzerland';
                     break;
             }
+            const buttons = station.land !== "ERROR"
+                ? `<button id="${this.code}-from">From</button>
+               <button id="${this.code}-to">To</button>`
+                : '';
             this.markup =
                 `<li class="stations--item">
                 <a href="/#stations/${this.code}">
@@ -277,8 +284,7 @@
                     <p>${this.country}</p>
                 </a>
                 <div>
-                <button id="${this.code}-from">From</button>
-                <button id="${this.code}-to">To</button>
+                ${buttons}
                 </div>
             </li>`;
         }
@@ -395,6 +401,7 @@
             });
         }
     }
+    //# sourceMappingURL=Stations.js.map
 
     /*
      * Created with https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d
@@ -465,6 +472,7 @@
             window.addEventListener('hashchange', this.checkRoute);
         }
     }
+    //# sourceMappingURL=Router.js.map
 
     class Trips extends Page {
         constructor(from, to) {
@@ -523,6 +531,7 @@
             });
         }
     }
+    //# sourceMappingURL=Trips.js.map
 
     class Trip extends Page {
         constructor(ctxRecon) {
@@ -569,6 +578,7 @@
             `;
         }
     }
+    //# sourceMappingURL=Trip.js.map
 
     class App {
         constructor() {
@@ -611,5 +621,6 @@
     }
     const app = new App;
     app.init();
+    //# sourceMappingURL=app.js.map
 
 }());
