@@ -46,7 +46,7 @@ Bij overmatig gebruik van de NS API kan NS de toegang tot de NS API beperken of 
     - Display passing stations in trip
     - Display train occupation per 
 
-### NS stations responce example
+### NS stations response example
 ```json
 {
 "EVACode": "7004428",
