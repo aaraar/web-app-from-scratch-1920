@@ -234,6 +234,7 @@
             this.stationsCountry.addEventListener('change', filter);
         }
     }
+    //# sourceMappingURL=Home.js.map
 
     class Station extends Page {
         constructor(station) {
@@ -451,9 +452,8 @@
         getEndpoint(url = window.location.href) {
             if (url.split('/')[url.split('/').length - 1] === '')
                 return '/';
-            let endpoint = '';
             const match = url.match(/#(.*)$/);
-            endpoint = match ? match[1] : '/';
+            const endpoint = match ? match[1] : '/';
             return this.clearSlashes(endpoint);
         }
         navigate(path = '/') {
@@ -465,7 +465,6 @@
             window.addEventListener('hashchange', this.checkRoute);
         }
     }
-    //# sourceMappingURL=Router.js.map
 
     class Trips extends Page {
         constructor(from, to) {

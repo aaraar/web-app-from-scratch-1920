@@ -55,9 +55,8 @@ export class Router {
 
     getEndpoint(url: string = window.location.href) {
         if (url.split('/')[url.split('/').length - 1] === '') return '/'
-        let endpoint = ''
         const match = url.match(/#(.*)$/)
-        endpoint = match ? match[1] : '/'
+        const endpoint = match ? match[1] : '/'
         return this.clearSlashes(endpoint)
     }
 
