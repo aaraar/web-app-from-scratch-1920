@@ -30,7 +30,7 @@
 - run `yarn` or `npm install` depending on your package manager prefference
 - run `yarn dev` or `npm run dev`
 - Open your browser and navigate to [http://localhost:10001](http://localhost:10001)
-#### Or simply go to the github.io page of this repo at [https://aaraar.github.io/web-apps-from-scratch-1920](https://aaraar.github.io/web-apps-from-scratch-1920)
+#### Or simply go to the github.io page of this repo at [https://aaraar.github.io/web-app-from-scratch-1920](https://aaraar.github.io/web-app-from-scratch-1920)
 ## App goal
 The goal of the app is to simplify the flow of finding the right train trip.
 A feature that NS (Dutch railway company) provides in their API is to show the crowdedness of each wagon.
