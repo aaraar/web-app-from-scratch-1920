@@ -4,6 +4,7 @@
 ![Dependencies](https://badgen.net/github/dependents-pkg/aaraar/web-app-from-scratch-1920)
 ![Release](https://badgen.net/github/release/aaraar/web-app-from-scratch-1920)
 ![Commits](https://badgen.net/github/commits/aaraar/web-app-from-scratch-1920)
+![Licens](https://img.shields.io/github/license/aaraar/web-app-from-scratch-1920)
 
 ## Table of Contents
 - [How to install](#how-to-install)
