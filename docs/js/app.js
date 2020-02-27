@@ -121,6 +121,7 @@
             });
         }
     }
+    //# sourceMappingURL=Api.js.map
 
     class Page extends Api {
         constructor(markup) {
@@ -622,6 +623,5 @@
     }
     const app = new App;
     app.init();
-    //# sourceMappingURL=app.js.map
 
 }());

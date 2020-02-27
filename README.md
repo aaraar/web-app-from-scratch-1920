@@ -1,7 +1,8 @@
-[Live Demo](https://aaraar.github.io/web-app-from-scratch-1920/)
-    
+[Live Demo](https://aaraar.github.io/web-app-from-scratch-1920/)    
 ![Header image](./documentation/ns-header.png)
 # NS tripplanner Readme
+![Version](https://badgen.net/badge/release/1.0.0/green)
+![No Packages](https://badgen.net/badge/0/dependencies/yellow)
 
 ## Table of Contents
 - [How to install](#how-to-install)

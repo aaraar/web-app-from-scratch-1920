@@ -54,6 +54,11 @@ class App {
                 }
             })
     }
+    // fixLinks() {
+    //     document.querySelectorAll('a').forEach( link => {
+    //         link.addEventListener('click')
+    //     })
+    // }
 }
 
 const app = new App
