@@ -3,8 +3,9 @@
 # NS tripplanner Readme
 ![Dependencies](https://badgen.net/github/dependents-pkg/aaraar/web-app-from-scratch-1920)
 ![Release](https://badgen.net/github/release/aaraar/web-app-from-scratch-1920)
-![Commits](https://badgen.net/github/commits/aaraar/web-app-from-scratch-1920)
-![Licens](https://img.shields.io/github/license/aaraar/web-app-from-scratch-1920)
+![GitHub package.json version (branch)](https://img.shields.io/github/package-json/v/aaraar/web-app-from-scratch-1920/master)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/aaraar/web-app-from-scratch-1920)
+![License](https://img.shields.io/github/license/aaraar/web-app-from-scratch-1920)
 
 ## Table of Contents
 - [How to install](#how-to-install)
