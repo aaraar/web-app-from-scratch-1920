@@ -48,7 +48,7 @@ export class Station extends Page {
             : ''
         this.markup =
             `<li class="stations--item">
-                <a href="/#stations/${this.code}">
+                <a href="/web-app-from-scratch-1920/#stations/${this.code}">
                     <h3>${this.name}</h3>
                     <p>${this.country}</p>
                 </a>

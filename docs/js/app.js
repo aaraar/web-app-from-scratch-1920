@@ -280,7 +280,7 @@
                 : '';
             this.markup =
                 `<li class="stations--item">
-                <a href="/#stations/${this.code}">
+                <a href="/web-app-from-scratch-1920/#stations/${this.code}">
                     <h3>${this.name}</h3>
                     <p>${this.country}</p>
                 </a>
@@ -484,11 +484,12 @@
                 const tripsEl = document.createElement('ul');
                 tripsEl.classList.add('trips--list');
                 const trips = yield this.trips;
+                console.log(trips);
                 // @ts-ignore
                 trips.trips.forEach(trip => {
                     const item = document.createElement('li');
                     const link = document.createElement('a');
-                    link.href = `/#trip/${encodeURIComponent(trip.ctxRecon)}`;
+                    link.href = `/web-app-from-scratch-1920/#trip/${encodeURIComponent(trip.ctxRecon)}`;
                     link.classList.add('trips--item');
                     const title = document.createElement('h3');
                     const time = document.createElement('p');
@@ -532,7 +533,6 @@
             });
         }
     }
-    //# sourceMappingURL=Trips.js.map
 
     class Trip extends Page {
         constructor(ctxRecon) {
@@ -623,5 +623,6 @@
     }
     const app = new App;
     app.init();
+    //# sourceMappingURL=app.js.map
 
 }());

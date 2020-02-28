@@ -23,11 +23,12 @@ export class Trips extends Page {
         const tripsEl = document.createElement('ul')
         tripsEl.classList.add('trips--list')
         const trips = await this.trips
+        console.log(trips)
         // @ts-ignore
         trips.trips.forEach(trip => {
             const item = document.createElement('li')
             const link = document.createElement('a')
-            link.href = `/#trip/${encodeURIComponent(trip.ctxRecon)}`
+            link.href = `/web-app-from-scratch-1920/#trip/${encodeURIComponent(trip.ctxRecon)}`
             link.classList.add('trips--item')
             const title = document.createElement('h3')
             const time = document.createElement('p')
