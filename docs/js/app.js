@@ -31,7 +31,7 @@
                 const queryArray = queries.map(query => query.join('='));
                 const query = queryArray.join('&');
                 return new Promise((resolve, reject) => {
-                    fetch(`${baseUrl}${endpoint}?${query}`, requestObject)
+                    fetch(`https://cors-anywhere.herokuapp.com/${baseUrl}${endpoint}?${query}`, requestObject)
                         .then(res => {
                         if (res.ok)
                             resolve(res.json());
@@ -121,7 +121,6 @@
             });
         }
     }
-    //# sourceMappingURL=Api.js.map
 
     class Page extends Api {
         constructor(markup) {
@@ -153,7 +152,6 @@
             }
         }
     }
-    //# sourceMappingURL=Page.js.map
 
     class Home extends Page {
         constructor(Stations) {
@@ -240,7 +238,6 @@
             this.stationsCountry.addEventListener('change', filter);
         }
     }
-    //# sourceMappingURL=Home.js.map
 
     class Station extends Page {
         constructor(station) {
@@ -342,7 +339,6 @@
             });
         }
     }
-    //# sourceMappingURL=Station.js.map
 
     class Stations {
         constructor() {
@@ -403,7 +399,6 @@
             });
         }
     }
-    //# sourceMappingURL=Stations.js.map
 
     /*
      * Created with https://medium.com/javascript-by-doing/create-a-modern-javascript-router-805fc14d084d
@@ -474,7 +469,6 @@
             window.addEventListener('hashchange', this.checkRoute);
         }
     }
-    //# sourceMappingURL=Router.js.map
 
     class Trips extends Page {
         constructor(from, to) {
@@ -580,7 +574,6 @@
             `;
         }
     }
-    //# sourceMappingURL=Trip.js.map
 
     class App {
         constructor() {
@@ -623,6 +616,5 @@
     }
     const app = new App;
     app.init();
-    //# sourceMappingURL=app.js.map
 
 }());
